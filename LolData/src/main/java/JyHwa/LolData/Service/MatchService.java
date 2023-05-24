@@ -4,6 +4,7 @@ import JyHwa.LolData.Dto.MatchDto.MatchDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -23,7 +24,7 @@ public class MatchService {
     @Value("${riot.api.key}")
     private String myKey;
 
-    private final String serverUrl = "https://asia.api.riotgames.com";
+    private final String serverUrl = "https://asia.api.riotgames.com/lol/match/v5/matches";
 
     public String[] callRiotAPIMatchIdByPuuid(String puuid){
 
@@ -31,7 +32,7 @@ public class MatchService {
         try{
             CloseableHttpClient client = HttpClientBuilder.create().build();
 
-            String url = String.format("%s/lol/match/v5/matches/by-puuid/%s/ids?type=ranked&start=0&count=20&api_key=%s",serverUrl,puuid,myKey);
+            String url = String.format("%s/by-puuid/%s/ids?type=ranked&start=0&count=20&api_key=%s",serverUrl,puuid,myKey);
             HttpGet request = new HttpGet(url);
 
             CloseableHttpResponse response = client.execute(request);
@@ -60,9 +61,20 @@ public class MatchService {
 
             CloseableHttpClient client = HttpClientBuilder.create().build();
 
-            String url = String.format()
+            String url = String.format("%s/%s?api_key=%s",serverUrl,MatchId,myKey);
+            HttpGet request = new HttpGet(url);
 
+            CloseableHttpResponse response = client.execute(request);
+            HttpEntity entity = response.getEntity();
+            matchDto = objectMapper.readValue(entity.getContent(),MatchDto.class);
+
+
+        } catch (ClientProtocolException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
+        return matchDto;
     }
 
 }

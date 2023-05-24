@@ -41,8 +41,7 @@ public class SummonerController {
     @PostMapping("/matchByMatchId")
     @ResponseBody
     public MatchDto matchByMatchId(String matchId){
-
-
+        MatchDto matchDto = matchService.callRiotAPIMatchByMatchId(matchId);
         return matchDto;
     }
 }
