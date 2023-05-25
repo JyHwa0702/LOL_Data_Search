@@ -1,12 +1,23 @@
 package JyHwa.LolData.Dto.MatchDto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
+import java.util.Map;
+
 @Data
+
 public class ParticipantDto {
+    private int allInPings;
+    private int assistMePings;
     private int assists;
+    private int baitPings;
     private int baronKills;
+    private int basicPings;
+    @JsonIgnore
+    private Map<String, Integer> challenges;
     private int bountyLevel;
+    private int commandPings;
     private int champExperience;
     private int champLevel;
     private int championId;
@@ -17,18 +28,24 @@ public class ParticipantDto {
     private int damageDealtToObjectives;
     private int damageDealtToTurrets;
     private int damageSelfMitigated;
+    private int dangerPings;
     private int deaths;
     private int detectorWardsPlaced;
     private int doubleKills;
     private int dragonKills;
+    private boolean eligibleForProgression;
+    private int enemyMissingPings;
+    private int enemyVisionPings;
     private boolean firstBloodAssist;
     private boolean firstBloodKill;
     private boolean firstTowerAssist;
     private boolean firstTowerKill;
     private boolean gameEndedInEarlySurrender;
     private boolean gameEndedInSurrender;
+    private int getBackPings;
     private int goldEarned;
     private int goldSpent;
+    private int holdPings;
     private String individualPosition;
     private int inhibitorKills;
     private int inhibitorTakedowns;
@@ -51,19 +68,22 @@ public class ParticipantDto {
     private int magicDamageDealt;
     private int magicDamageDealtToChampions;
     private int magicDamageTaken;
+    private int needVisionPings;
     private int neutralMinionsKilled;
     private int nexusKills;
     private int nexusTakedowns;
     private int nexusLost;
     private int objectivesStolen;
     private int objectivesStolenAssists;
+    private int onMyWayPings;
     private int participantId;
     private int pentaKills;
-    private PerksDto perksDto;
+    private PerksDto perks;
     private int physicalDamageDealt;
     private int physicalDamageDealtToChampions;
     private int physicalDamageTaken;
     private int profileIcon;
+    private int pushPings;
     private String puuid;
     private int quadraKills;
     private String riotIdName;
@@ -86,10 +106,12 @@ public class ParticipantDto {
     private String teamPosition;
     private int timeCCingOthers;
     private int timePlayed;
+    private int totalAllyJungleMinionsKilled;
     private int totalDamageDealt;
     private int totalDamageDealtToChampions;
     private int totalDamageShieldedOnTeammates;
     private int totalDamageTaken;
+    private int totalEnemyJungleMinionsKilled;
     private int totalHeal;
     private int totalHealsOnTeammates;
     private int totalMinionsKilled;
@@ -104,6 +126,7 @@ public class ParticipantDto {
     private int turretTakedowns;
     private int turretsLost;
     private int unrealKills;
+    private int visionClearedPings;
     private int visionScore;
     private int visionWardsBoughtInGame;
     private int wardsKilled;
