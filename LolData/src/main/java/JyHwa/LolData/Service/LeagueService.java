@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.IOException;
 
 @Service
@@ -24,16 +25,15 @@ public class LeagueService {
     private  String myKey;
 
 
+    @Transactional
     public LeagueEntryDto[] LeagueBySummonerId(String summonerId){
-        LeagueEntryDto[] leagueEntryDto = new LeagueEntryDto[2];
-        for (int i =0; i<leagueEntryDto.length; i++){
-            leagueEntryDto[i] = new LeagueEntryDto();
-        }
+        LeagueEntryDto[] leagueEntryDtos = new LeagueEntryDto[]{null,null};
 
         try {
             CloseableHttpClient client = HttpClientBuilder.create().build();
 
             String url = String.format("%s/entries/by-summoner/%s?api_key=%s",serverUrl,summonerId,myKey);
+
             HttpGet request = new HttpGet(url);
             CloseableHttpResponse response = client.execute(request);
 
@@ -42,8 +42,24 @@ public class LeagueService {
                 return null;
             }
             HttpEntity entity = response.getEntity();
+            LeagueEntryDto[] apiResponse= objectMapper.readValue(entity.getContent(), LeagueEntryDto[].class);
 
-            leagueEntryDto= objectMapper.readValue(entity.getContent(), LeagueEntryDto[].class);
+
+            for(LeagueEntryDto entry : apiResponse){
+                if(entry.getQueueType().equals("RANKED_SOLO_5x5")){
+                    leagueEntryDtos[0] = entry;
+                }else if (entry.getQueueType().equals("RANKED_FLEX_SR")){
+                    leagueEntryDtos[1] = entry;
+                }
+            }
+            for(int i=0; i<leagueEntryDtos.length; i++){
+                if(leagueEntryDtos[i] ==null){
+                    leagueEntryDtos[i] = new LeagueEntryDto();
+                    leagueEntryDtos[i].setTier("UNRANKED");
+                    leagueEntryDtos[i].setRank("");
+                }
+            }
+
 
         } catch (ClientProtocolException e) {
             e.printStackTrace();
@@ -52,6 +68,6 @@ public class LeagueService {
             e.printStackTrace();
             return null;
         }
-        return leagueEntryDto;
+        return leagueEntryDtos;
     }
 }

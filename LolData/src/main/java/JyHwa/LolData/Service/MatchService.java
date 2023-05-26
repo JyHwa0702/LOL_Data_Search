@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.IOException;
 
 @Service
@@ -23,7 +24,7 @@ public class MatchService {
     private String myKey;
 
     private final String serverUrl = "https://asia.api.riotgames.com/lol/match/v5/matches";
-
+    @Transactional
     public String[] callRiotAPIMatchIdByPuuid(String puuid){
 
         String[] matchIds;

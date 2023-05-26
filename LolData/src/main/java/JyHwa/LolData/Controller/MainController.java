@@ -25,16 +25,56 @@ public class MainController {
         return "index";
     }
 
+    @GetMapping("/showRankedEmblem")
+    public void showRankedEmblem(User user,Model model){
+        String rankedEmblem=null;
+
+        switch (user.getTier()) {
+            case "IRON":
+                rankedEmblem = "emblem-iron.png";
+                break;
+            case "BRONZE":
+                rankedEmblem = "emblem-bronze.png";
+                break;
+            case "SILVER":
+                rankedEmblem = "emblem-silver.png";
+                break;
+            case "GOLD":
+                rankedEmblem = "emblem-gold.png";
+                break;
+            case "PLATINUM":
+                rankedEmblem = "emblem-platinum.png";
+                break;
+            case "DIAMOND":
+                rankedEmblem = "emblem-diamond.png";
+                break;
+            case "MASTER":
+                rankedEmblem = "emblem-master.png";
+                break;
+            case "GRANDMASTER":
+                rankedEmblem = "emblem-grandmaster.png";
+                break;
+            case "CHALLENGER":
+                rankedEmblem = "emblem-challenger.png";
+                break;
+            case "UNRANKED":
+                rankedEmblem = "emblem-provisional.png";
+                break;
+        }
+        model.addAttribute("rankedEmblem",rankedEmblem);
+
+        }
+
     @PostMapping("/searchBySummonerName")
     public String SearchByName(String summonerName, Model model){
         UserDto userDto = mainService.SearchBySummonerName(summonerName);
-        mainService.saveUser(userDto);
+        User user = mainService.saveUser(userDto);
+        model.addAttribute("user",user);
+        showRankedEmblem(user, model);
 
 
 
-        //전적 검색한 필드
-        List<User> users = mainService.FindBycheckField(1);
-        model.addAttribute("users",users);
+
         return "searchForm";
     }
 }

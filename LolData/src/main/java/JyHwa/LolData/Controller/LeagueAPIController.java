@@ -17,7 +17,12 @@ public class LeagueAPIController {
     @PostMapping("/LeagueBySummonerId")
     @ResponseBody
     public LeagueEntryDto[] LeagueBySummonerId(String summonerId){
+
+
         LeagueEntryDto[] leagueEntryDtos = leagueService.LeagueBySummonerId(summonerId);
+
+
+
         return leagueEntryDtos;
     }
 

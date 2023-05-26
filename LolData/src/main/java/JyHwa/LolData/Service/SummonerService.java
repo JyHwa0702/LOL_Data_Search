@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.IOException;
 
 @Service
@@ -25,7 +26,7 @@ public class SummonerService {
     @Value("${riot.api.key}")
     private String myKey;
     private final String serverUrl =  "https://kr.api.riotgames.com";
-
+    @Transactional
     public SummonerDto callRiotAPISummonerByName(String summonerName){
 
         SummonerDto result;

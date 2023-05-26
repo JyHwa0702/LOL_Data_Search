@@ -10,10 +10,14 @@
     <input type="text" name="summonerName" placeholder="소환사의 이름을 입력하세요.">
   </form>
 
-<!--<tr th:each:"summoner : ${summonersCheckField1}">-->
-<!--  <td th:text="${summoner."-->
+  <div>
+      <p th:text="|아이디 : ${user.summonerName}|"></p>
+      <p th:text="|레벨 : ${user.summonerLevel}|"></p>
+      <p th:text="|등급 : ${user.tier} ${user.rank}|"></p>
+      <p th:text="|승/패 : ${user.wins}승 ${user.losses}패|"></p>
 
-<!--</tr>-->
+      <img th:src="@{|/images/RankedEmblem/${rankedEmblem}|}" alt="Ranked Emblem">
+  </div>
 
 </body>
 </html>

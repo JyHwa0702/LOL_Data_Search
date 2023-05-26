@@ -13,6 +13,7 @@ import JyHwa.LolData.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
@@ -25,20 +26,23 @@ public class MainService {
     private final MatchAPIController matchAPIController;
     private final LeagueAPIController leagueAPIController;
 
+    @Transactional
     public void saveSummoner(SummonerDto summonerDto){
         summonerDto.setCheckField(1);
         summonerRepository.save(summonerDto.toEntity());
     }
-    public void saveUser(UserDto userDto){
+    @Transactional
+    public User saveUser(UserDto userDto){
         userDto.setCheckField(1);
-        userRepository.save(userDto.toEntity());
+        User user = userRepository.save(userDto.toEntity());
+        return user;
     }
-
+    @Transactional
     public List<User> FindBycheckField(int checkField){
         List<User> users = userRepository.findByCheckField(checkField);
         return users;
     }
-
+    @Transactional
     public UserDto SearchBySummonerName(String summonerName){
         SummonerDto summonerDto = summonerAPIController.callSummonerByName(summonerName);
         LeagueEntryDto[] leagueEntryDtos = leagueAPIController.LeagueBySummonerId(summonerDto.getId());
@@ -48,10 +52,11 @@ public class MainService {
 
         return userDto;
     }
+    @Transactional
     public void UserDtoBysummonerDtoAndLeagueEntryDtos(UserDto userDto,SummonerDto summonerDto,LeagueEntryDto[] leagueEntryDtos){
         LeagueEntryDto leagueEntryDto = leagueEntryDtos[0]; //솔로큐
 
-        userDto.setSummonerName(leagueEntryDto.getSummonerName());
+        userDto.setSummonerName(summonerDto.getName());
         userDto.setQueueType(leagueEntryDto.getQueueType());
         userDto.setTier(leagueEntryDto.getTier());
         userDto.setRank(leagueEntryDto.getRank());
