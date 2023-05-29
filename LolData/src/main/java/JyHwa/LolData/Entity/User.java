@@ -26,6 +26,8 @@ public class User {
     private int losses;
 
     //SummonerDto
+    private String puuid;
+    private int profileIconId;
     private long summonerLevel;
     private int checkField;
 
@@ -38,6 +40,8 @@ public class User {
         this.leaguePoints =userDto.getLeaguePoints();
         this.wins =userDto.getWins();
         this.losses =userDto.getLosses();
+        this.puuid = userDto.getPuuid();
+        this.profileIconId=userDto.getProfileIconId();
         this.summonerLevel =userDto.getSummonerLevel();
         this.checkField =userDto.getCheckField();
     }

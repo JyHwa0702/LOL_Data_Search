@@ -6,18 +6,68 @@
 </head>
 <body>
   <h1>영화GG</h1>
-  <form method="post" th:action="@{/searchBySummonerName}">
-    <input type="text" name="summonerName" placeholder="소환사의 이름을 입력하세요.">
+
+  <!--검색창-->
+  <form  th:action="@{/searchBySummonerName}" method="post">
+      <label for="summonerName">소환사 이름 : </label>
+      <input type="text" id="summonerName" name="summonerName" placeholder="소환사의 이름을 입력하세요." required>
+      <button type="submit">검색</button>
   </form>
 
   <div>
+      <img th:src="@{${profileIconUrl}}" alt="profileIconUrl">
       <p th:text="|아이디 : ${user.summonerName}|"></p>
       <p th:text="|레벨 : ${user.summonerLevel}|"></p>
       <p th:text="|등급 : ${user.tier} ${user.rank}|"></p>
       <p th:text="|승/패 : ${user.wins}승 ${user.losses}패|"></p>
-
-      <img th:src="@{|/images/RankedEmblem/${rankedEmblem}|}" alt="Ranked Emblem">
+      <img th:src="@{|/images/RankedEmblem/${rankedEmblem}|}" alt="ranked Emblem">
   </div>
+<div>
+    <table>
+        <thead>
+            <tr>
+                <th>승</th>
+                <th>챔피언</th>
+                <th>KDA</th>
+                <th>킬관여</th>
+                <th>S/R</th>
+                <th>팀</th>
+                <th>아이템</th>
+                <th>LV/G/CS</th>
+                <th>플레이</th>
+                <th>와드</th>
+                <th>상세 정보</th>
+            </tr>
+        </thead>
+    <tbody>
+    <tr th:each="matchDto: ${matchDtos}">
+    <th:block th:each="participant:${matchDto.info.participants}" th:if="${participant.summonerName == user.summonerName}">
+            <!-- 승/패 여부 결정 -->
+            <td th:text="${participant.win ? '승':'패'}"></td>
+            <!-- 본인의 아이디 기준 챔피언 이름, KDA, 킬 관여 등 정보 표시 -->
+            <td th:text="${participant.championName}"></td>
+            <td th:text="|${participant.kills}/${participant.deaths}/${participant.assists}|"></td>
+            <td th:text="${participant.kills}"></td>
+            <td th:text="${participant.goldEarned}"></td>
+            <td>
+                <ul>
+                    <li  th:text="${item0}"></li>
+                    <li  th:text="${item1}"></li>
+                    <li  th:text="${item2}"></li>
+                    <li  th:text="${item3}"></li>
+                    <li  th:text="${item4}"></li>
+                    <li  th:text="${item5}"></li>
+                    <li  th:text="${item6}"></li>
+                </ul>
+            </td>
+            <td th:text="${participant.totalMinionsKilled}"></td>
+            <td th:text="|와드 설치:${participant.wardsPlaced} / 제거:${participant.wardsKilled}|"></td>
+            <td><a href="@{|/matchDetails/${matchDto.gameId}|}">상세 정보</a> </td>
+    </th:block>
+    </tr>
+    </tbody>
+    </table>
+</div>
 
 </body>
 </html>

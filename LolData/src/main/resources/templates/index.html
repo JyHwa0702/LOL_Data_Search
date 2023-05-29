@@ -2,13 +2,16 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>롤 전적 검색</title>
 </head>
 <body>
 
 <h1>영화GG</h1>
-<form method="post" th:action="@{/searchBySummonerName}">
-    <input type="text" name="summonerName" placeholder="소환사의 이름을 입력하세요.">
+<form  th:action="@{/searchBySummonerName}" method="post">
+    <label for="summonerName">소환사 이름 : </label>
+    <input type="text" id="summonerName" name="summonerName" placeholder="소환사의 이름을 입력하세요." required>
+    <button type="submit">검색</button>
+
 </form>
 
 </body>

@@ -5,26 +5,20 @@ import JyHwa.LolData.Service.SummonerService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/summoners")
 public class SummonerAPIController {
 
     private final SummonerService summonerService;
 
 
-    @PostMapping("/summonerByName")
-    @ResponseBody
+    @PostMapping("/name")
     public SummonerDto callSummonerByName(String summonerName){
-
-        summonerName = summonerName.replaceAll(" ","%20");
-
-        SummonerDto apiResult =summonerService.callRiotAPISummonerByName(summonerName);
-
-        return apiResult;
+        String encodedSummonerName = summonerName.replaceAll(" ","%20");
+        return summonerService.callRiotAPISummonerByName(encodedSummonerName);
     }
 
 

@@ -1,7 +1,6 @@
 package JyHwa.LolData.Dto;
 
 import JyHwa.LolData.Entity.User;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -20,6 +19,8 @@ public class UserDto {
     private int losses;
 
     //SummonerDto
+    private String puuid;
+    private int profileIconId;
     private long summonerLevel;
     private int checkField;
 
@@ -32,6 +33,8 @@ public class UserDto {
         this.leaguePoints =user.getLeaguePoints();
         this.wins =user.getWins();
         this.losses =user.getLosses();
+        this.puuid = user.getPuuid();
+        this.profileIconId = user.getProfileIconId();
         this.summonerLevel =user.getSummonerLevel();
         this.checkField =user.getCheckField();
     }

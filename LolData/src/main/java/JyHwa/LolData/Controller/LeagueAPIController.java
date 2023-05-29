@@ -6,24 +6,20 @@ import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/league")
 public class LeagueAPIController {
 
     private final LeagueService leagueService;
 
-    @PostMapping("/LeagueBySummonerId")
-    @ResponseBody
+    @PostMapping("/summoner")
     public LeagueEntryDto[] LeagueBySummonerId(String summonerId){
-
-
-        LeagueEntryDto[] leagueEntryDtos = leagueService.LeagueBySummonerId(summonerId);
-
-
-
-        return leagueEntryDtos;
+        return leagueService.LeagueBySummonerId(summonerId);
     }
 
 }
