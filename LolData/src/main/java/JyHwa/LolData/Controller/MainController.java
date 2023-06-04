@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Controller
@@ -33,37 +34,15 @@ public class MainController {
         return "index";
     }
 
-//    @GetMapping("/spells/{spellKey}")
-//    public String showSpellByKey(@PathVariable int spellKey, Model model){
-//        return"";
-//    }
-
-
-
     @PostMapping("/searchBySummonerName")
     public String SearchByName(String summonerName, Model model){
-        UserDto userDto = mainService.SearchBySummonerName(summonerName);
-        model.addAttribute("user",userDto);
-
-        String rankedEmblem = mainService.showRankedEmblemByTier(userDto.getTier());
-        model.addAttribute("rankedEmblem",rankedEmblem); //랭크 엠블럼 표시
-
-
-        String profileIconUrl = mainService.showProfileIconUrlByUserDto(userDto);
-        model.addAttribute("profileIconUrl",profileIconUrl); //프로필 아이콘 표시
-
-        String[] matchIds = matchService.callRiotAPIMatchIdByPuuid(userDto.getPuuid());
-        List<MatchDto> matchDtos = matchService.callRiotAPIMatchsByMatchIds(matchIds);
-
-        Set<String> spellKeys = matchService.extractSpellKeysFromMatches(matchDtos); //매치의 스펠키 가져옴
-        matchService.modelSpellUrlBySpellKey(spellKeys,model); //스펠키로 스펠 이름 뽑아서 모델넣음
-
-        for (int i=0; i<matchDtos.toArray().length; i++){
-            MatchDto matchDto = matchDtos.get(i);
-            List<ParticipantDto> participants = matchDto.getInfo().getParticipants();
-
-        }
-        model.addAttribute("matchDtos",matchDtos);
+        UserDto userDto = mainService.SearchBySummonerName(summonerName,model);
+        mainService.showRankedEmblemByTier(userDto.getTier(),model);
+        mainService.showProfileIconUrlByUserDto(userDto,model);//프로필 아이콘 표시
+        List<MatchDto> matchDtos = mainService.matchDtosByUserPuuid(userDto.getPuuid(), model);
+        mainService.showSpellImageUrlByMatchDtos(matchDtos,model); //스펠 이미지 보여주기
+        mainService.showChampionImageUrlByMatchDtos(matchDtos,model);
+        mainService.showItemImageUrlByMatchDtos(matchDtos,model);
         return "searchForm";
     }
 

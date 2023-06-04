@@ -1,22 +1,22 @@
 package JyHwa.LolData.Service;
 
-import JyHwa.LolData.Controller.LeagueAPIController;
-import JyHwa.LolData.Controller.MatchAPIController;
-import JyHwa.LolData.Controller.SummonerAPIController;
 import JyHwa.LolData.Dto.LeagueEntryDto.LeagueEntryDto;
 import JyHwa.LolData.Dto.LolUrl;
+import JyHwa.LolData.Dto.MatchDto.MatchDto;
 import JyHwa.LolData.Dto.SummonerDto;
 import JyHwa.LolData.Dto.UserDto;
-import JyHwa.LolData.Entity.Summoner;
 import JyHwa.LolData.Entity.User;
 import JyHwa.LolData.Repository.SummonerRepository;
 import JyHwa.LolData.Repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -26,41 +26,37 @@ public class MainService {
     private final UserRepository userRepository;
     private final SummonerService summonerService;
     private final LeagueService leagueService;
+    private final MatchService matchService;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final LolUrl lolUrl = new LolUrl();
 
 
-    @Transactional
     public void saveSummoner(SummonerDto summonerDto) {
         summonerDto.setCheckField(1);
         summonerRepository.save(summonerDto.toEntity());
     }
 
-    @Transactional
     public UserDto saveUser(UserDto userDto) {
         userDto.setCheckField(1);
         User user = userRepository.save(userDto.toEntity());
         return userDto;
     }
 
-    @Transactional
     public List<User> FindBycheckField(int checkField) {
         List<User> users = userRepository.findByCheckField(checkField);
         return users;
     }
 
-    @Transactional
-    public UserDto SearchBySummonerName(String summonerName) {
+    public UserDto SearchBySummonerName(String summonerName,Model model) {
         SummonerDto summonerDto = summonerService.callRiotAPISummonerByName(summonerName);
         LeagueEntryDto[] leagueEntryDtos = leagueService.LeagueBySummonerId(summonerDto.getId());
         UserDto userDto = new UserDto();
 
         UserDtoBysummonerDtoAndLeagueEntryDtos(userDto, summonerDto, leagueEntryDtos);
-
+        model.addAttribute("user",userDto);
         return userDto;
     }
 
-    @Transactional
     public void UserDtoBysummonerDtoAndLeagueEntryDtos(UserDto userDto, SummonerDto summonerDto, LeagueEntryDto[] leagueEntryDtos) {
         LeagueEntryDto leagueEntryDto = leagueEntryDtos[0]; //솔로큐
 
@@ -77,8 +73,15 @@ public class MainService {
         userDto.setCheckField(summonerDto.getCheckField());
     }
 
-    @Transactional
-    public String showRankedEmblemByTier(String tier) {
+    public List<MatchDto> matchDtosByUserPuuid(String puuId,Model model) {
+
+        String[] matchIds = matchService.callRiotAPIMatchIdByPuuid(puuId);
+        List<MatchDto> matchDtos = matchService.callRiotAPIMatchsByMatchIds(matchIds);
+        model.addAttribute("matchDtos", matchDtos);
+        return matchDtos;
+    }
+
+    public void showRankedEmblemByTier(String tier,Model model) {
         String rankedEmblem = null;
 
         switch (tier) {
@@ -114,68 +117,28 @@ public class MainService {
                 break;
 
         }
-        return rankedEmblem;
+        model.addAttribute("rankedEmblem",rankedEmblem); //랭크 엠블럼 표시
     }
-
-    @Transactional
-    public String showProfileIconUrlByUserDto(UserDto userDto) {
+    public void showProfileIconUrlByUserDto(UserDto userDto,Model model) {
         int profileIconId = userDto.getProfileIconId();
-        String profileIconsUrl = String.format("%s/profileicon/%d.png", lolUrl.getImgUrl(), profileIconId);
+        String profileIconUrl = String.format("%s/profileicon/%d.png", lolUrl.getImgUrl(), profileIconId);
         //http://ddragon.leagueoflegends.com/cdn/profileicon/3584.png
-        return profileIconsUrl;
+        model.addAttribute("profileIconUrl",profileIconUrl); //프로필 아이콘 표시
     }
+    public void showSpellImageUrlByMatchDtos(List<MatchDto> matchDtos, Model model) {
+        Set<Integer> spellKeys = matchService.extractSpellKeysFromMatches(matchDtos); //매치의 스펠키 가져옴
+        Map<Integer, String> spellUrlBySpellKey = matchService.spellImagesUrlBySpellKey(spellKeys);//스펠키로 스펠이름 뽑음
+        model.addAttribute("spellUrlBySpellKey", spellUrlBySpellKey);
+    }
+    public void showChampionImageUrlByMatchDtos(List<MatchDto> matchDtos,Model model) {
+        Set<String> championNames = matchService.extractChampionNameFromMatches(matchDtos); //매치에 있는 챔피언들 불러옴
+        Map<String, String> championImagesUrlByChampionNames = matchService.championImagesUrlByChampionNames(championNames); //챔피언 이름으로 url뽑아오는 거 map에 담음
+        model.addAttribute("championImagesUrlByChampionNames", championImagesUrlByChampionNames);
+    }
+    public void showItemImageUrlByMatchDtos(List<MatchDto> matchDtos,Model model){
+        Set<Integer> itemCodes = matchService.extractItemCodeFromMatches(matchDtos);
+        Map<Integer, String> itemImagesUrlByMatchDtos = matchService.itemImagesUrlByMatchDtos(itemCodes);
+        model.addAttribute("itemImagesUrlByMatchDtos",itemImagesUrlByMatchDtos);
 
-//    public JsonNode getSpellData() {
-//        String spellDataUrl = lolUrl.getLoljsonUrl() + "summoner.json";
-//
-//        try (CloseableHttpClient httpClient = HttpClientBuilder.create().build()) {
-//            HttpGet request = new HttpGet(spellDataUrl);
-//            try (CloseableHttpResponse response = httpClient.execute(request)) {
-//                if (response.getStatusLine().getStatusCode() != 200) {
-//                    System.out.println("MainService클래스 getSpellData메서드 try문 안에 !=200");
-//                    return null;
-//                }
-//
-//                HttpEntity entity = response.getEntity();
-//                JsonNode spellData = objectMapper.readTree(entity.getContent());
-//                return spellData;
-//
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            return null;
-//        }
-//    }
-//
-//    @Transactional
-//    public String getSpellImageUrlByKey(String spellKey) {
-//        JsonNode spellData = getSpellData();
-//        if (spellData == null) {
-//            return null;
-//        }
-//
-//        //'data'속성의 노드 가져오기
-//        JsonNode dataNode = spellData.get("data");
-//
-//        if (dataNode == null) {
-//            return null;
-//        }
-//
-//        //'data' 노드의 모든 요소를 반복
-//        for (Iterator<JsonNode> it = dataNode.elements(); it.hasNext(); ) {
-//
-//            //현재 요소 가져옴
-//            JsonNode spellNode = it.next();
-//
-//            //현재 요소가 문제없고,'key'속성이 있고, 주어진 스펠 키 값과 일치하면
-//            if (spellNode != null && spellNode.get("key") != null && spellNode.get("key").asText().equals(spellKey)) {
-//                //'id'속성에 이름 가져오기
-//                String spellId = spellNode.get("id").get("full").asText();
-//
-//
-//                return String.format("%s/spell/%s.png", lolUrl.getLolImgUrl(), spellId);
-//            }
-//        }
-//        return null;
-//    }
+    }
 }

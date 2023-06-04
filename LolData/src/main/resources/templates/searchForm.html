@@ -44,18 +44,19 @@
             <!-- 승/패 여부 결정 -->
             <td th:text="${participant.win ? '승':'패'}"></td>
             <!-- 본인의 아이디 기준 챔피언 이름, KDA, 킬 관여 등 정보 표시 -->
-            <td th:src="${participant.championName}" alt="chapionImage"></td> //챔피언
+            <td><img th:src="${championImagesUrlByChampionNames[participant.championName]}" alt="championImage"></td>
             <td th:text="|${participant.kills}/${participant.deaths}/${participant.assists}|"></td>
-            <td><img th:with="spellKey=${participant.summoner1Id}" th:src="${spellKeyUrlMap.get(participant.summoner1Id)}"></td>
+            <td><img th:src="${spellUrlBySpellKey[participant.summoner1Id]}" alt="spellImage1">
+                <img th:src="${spellUrlBySpellKey[participant.summoner2Id]}" alt="spellImage2"></td>
             <td>
                 <ul>
-                    <li  th:text="${item0}"></li>
-                    <li  th:text="${item1}"></li>
-                    <li  th:text="${item2}"></li>
-                    <li  th:text="${item3}"></li>
-                    <li  th:text="${item4}"></li>
-                    <li  th:text="${item5}"></li>
-                    <li  th:text="${item6}"></li>
+                    <li><img  th:src="${itemImagesUrlByMatchDtos[participant.item6]}"></li> <!--와드 또는 렌즈-->
+                    <li><img  th:src="${itemImagesUrlByMatchDtos[participant.item0]}"></li>
+                    <li><img  th:src="${itemImagesUrlByMatchDtos[participant.item1]}"></li>
+                    <li><img  th:src="${itemImagesUrlByMatchDtos[participant.item2]}"></li>
+                    <li><img  th:src="${itemImagesUrlByMatchDtos[participant.item3]}"></li>
+                    <li><img  th:src="${itemImagesUrlByMatchDtos[participant.item4]}"></li>
+                    <li><img  th:src="${itemImagesUrlByMatchDtos[participant.item5]}"></li>
                 </ul>
             </td>
             <td th:text="|${participant.champLevel}/${participant.goldEarned}/${participant.totalMinionsKilled}|"></td>

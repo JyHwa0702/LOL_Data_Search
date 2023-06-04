@@ -14,7 +14,6 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
@@ -58,33 +57,86 @@ public class MatchService {
         return matchIds;
 
     }
-    public Set<String> extractSpellKeysFromMatches(List<MatchDto> matchDtos){
+    public Set<Integer> extractSpellKeysFromMatches(List<MatchDto> matchDtos){
 
-        Set<String> spellKeys = new HashSet<>();
+        Set<Integer> spellKeys = new HashSet<>();
         for(MatchDto matchDto : matchDtos){
             List<ParticipantDto> participantDtos = matchDto.getInfo().getParticipants();
 
             for(ParticipantDto participantDto : participantDtos){
                 int summoner1Id = participantDto.getSummoner1Id();
-                spellKeys.add(String.valueOf(summoner1Id));
+                spellKeys.add(summoner1Id);
                 int summoner2Id = participantDto.getSummoner2Id();
-                spellKeys.add(String.valueOf(summoner2Id));
+                spellKeys.add(summoner2Id);
             }
         }
         return spellKeys;
     }
+    public Set<String> extractChampionNameFromMatches(List<MatchDto> matchDtos){
+        Set<String> championNames =new HashSet<>();
+        for (MatchDto matchDto : matchDtos){
+            List<ParticipantDto> participants = matchDto.getInfo().getParticipants();
 
-    public void modelSpellUrlBySpellKey(Set<String> spellKeys, Model model){
-        Map<String,String> spellKeyUrlMap = new HashMap<>();
+            for(ParticipantDto participantDto : participants){
+                String championName = participantDto.getChampionName();
+                championNames.add(championName);
+            }
+        }
+        return championNames;
+    }
+    public Set<Integer> extractItemCodeFromMatches(List<MatchDto> matchDtos){
+        Set<Integer> itemCodes = new HashSet<>();
+        for(MatchDto matchDto:matchDtos){
+            List<ParticipantDto> participants = matchDto.getInfo().getParticipants();
+            for (ParticipantDto participantDto : participants){
+                int item0 = participantDto.getItem0();
+                int item1 = participantDto.getItem1();
+                int item2 = participantDto.getItem2();
+                int item3 = participantDto.getItem3();
+                int item4 = participantDto.getItem4();
+                int item5 = participantDto.getItem5();
+                int item6 = participantDto.getItem6();
 
-        for(String spellKey: spellKeys){
+                itemCodes.add(item0);
+                itemCodes.add(item1);
+                itemCodes.add(item2);
+                itemCodes.add(item3);
+                itemCodes.add(item4);
+                itemCodes.add(item5);
+                itemCodes.add(item6);
+            }
+        }
+        return itemCodes;
+    }
+    public Map<Integer,String> spellImagesUrlBySpellKey(Set<Integer> spellKeys){
+        Map<Integer,String> spellKeyUrlMap = new HashMap<>();
+
+        for(int spellKey: spellKeys){
+            System.out.println("spellKey="+spellKey);
             String spellImageUrlByKey = getSpellImageUrlByKey(spellKey);
             spellKeyUrlMap.put(spellKey,spellImageUrlByKey);
         }
-        model.addAttribute("spellKeyUrlMap",spellKeyUrlMap);
+        System.out.println("spellKeyUrlMap.get(14) = "+spellKeyUrlMap.get("14"));
+        return spellKeyUrlMap;
     }
-
-
+    public Map<String,String> championImagesUrlByChampionNames(Set<String> championName){
+        Map<String,String> championImagesUrlMap = new HashMap<>();
+        for (String chapionName:championName){
+            String championImageUrl = String.format("%s/champion/%s.png",lolUrl.getImgUrl(),chapionName);
+            //https://ddragon.leagueoflegends.com/cdn/10.6.1/img/champion/<champion_name>.png
+            championImagesUrlMap.put(chapionName,championImageUrl);
+        }
+        return championImagesUrlMap;
+    }
+    public Map<Integer,String> itemImagesUrlByMatchDtos(Set<Integer> itemCodes){
+        Map<Integer,String> itemImagesUrlMap = new HashMap<>();
+        for(int itemcode : itemCodes){
+            String itemImageUrl = String.format("%s/item/%s.png", lolUrl.getImgUrl(),itemcode);
+            //https://ddragon.leagueoflegends.com/cdn/10.6.1/img/item/3108.png
+            itemImagesUrlMap.put(itemcode,itemImageUrl);
+        }
+        return itemImagesUrlMap;
+    }
     public MatchDto callRiotAPIMatchByMatchId(String matchId){
         MatchDto matchDto;
         try{
@@ -115,7 +167,7 @@ public class MatchService {
         return matchDtos;
     }
     public JsonNode getSpellData() {
-        String spellDataUrl = lolUrl.getJsonUrl() + "summoner.json";
+        String spellDataUrl = lolUrl.getJsonUrl() + "/summoner.json"; //http://ddragon.leagueoflegends.com/cdn/13.10.1/data/ko_KR/summoner.json
 
         try (CloseableHttpClient httpClient = HttpClientBuilder.create().build()) {
             HttpGet request = new HttpGet(spellDataUrl);
@@ -135,11 +187,10 @@ public class MatchService {
             return null;
         }
     }
-
-    @Transactional
-    public String getSpellImageUrlByKey(String spellKey) {
+    public String getSpellImageUrlByKey(int spellKey) {
         JsonNode spellData = getSpellData();
         if (spellData == null) {
+            System.out.println("getSpellImageUrlByKey spellData == null");
             return null;
         }
 
@@ -147,6 +198,7 @@ public class MatchService {
         JsonNode dataNode = spellData.get("data");
 
         if (dataNode == null) {
+            System.out.println("getSpellImageUrlByKey dataNode == null");
             return null;
         }
 
@@ -156,13 +208,16 @@ public class MatchService {
             //현재 요소 가져옴
             JsonNode spellNode = it.next();
 
+            String spellKey_String=""+spellKey;
             //현재 요소가 문제없고,'key'속성이 있고, 주어진 스펠 키 값과 일치하면
-            if (spellNode != null && spellNode.get("key") != null && spellNode.get("key").asText().equals(spellKey)) {
+            if (spellNode != null && spellNode.get("key") != null && spellNode.get("key").asText().equals(spellKey_String)) {
                 //'id'속성에 이름 가져오기
                 String spellId = spellNode.get("id").asText();
+                System.out.println("MatchService getSpellImageUrlByKey spellId = "+spellId);
                 return String.format("%s/spell/%s.png", lolUrl.getImgUrl(), spellId);
             }
         }
+        System.out.println("getSpellImageUrlByKey 마지막 null");
         return null;
     }
 
