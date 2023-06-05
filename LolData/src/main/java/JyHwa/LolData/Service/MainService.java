@@ -35,18 +35,15 @@ public class MainService {
         summonerDto.setCheckField(1);
         summonerRepository.save(summonerDto.toEntity());
     }
-
     public UserDto saveUser(UserDto userDto) {
         userDto.setCheckField(1);
         User user = userRepository.save(userDto.toEntity());
         return userDto;
     }
-
     public List<User> FindBycheckField(int checkField) {
         List<User> users = userRepository.findByCheckField(checkField);
         return users;
     }
-
     public UserDto SearchBySummonerName(String summonerName,Model model) {
         SummonerDto summonerDto = summonerService.callRiotAPISummonerByName(summonerName);
         LeagueEntryDto[] leagueEntryDtos = leagueService.LeagueBySummonerId(summonerDto.getId());
@@ -56,7 +53,6 @@ public class MainService {
         model.addAttribute("user",userDto);
         return userDto;
     }
-
     public void UserDtoBysummonerDtoAndLeagueEntryDtos(UserDto userDto, SummonerDto summonerDto, LeagueEntryDto[] leagueEntryDtos) {
         LeagueEntryDto leagueEntryDto = leagueEntryDtos[0]; //솔로큐
 
@@ -72,7 +68,6 @@ public class MainService {
         userDto.setSummonerLevel(summonerDto.getSummonerLevel());
         userDto.setCheckField(summonerDto.getCheckField());
     }
-
     public List<MatchDto> matchDtosByUserPuuid(String puuId,Model model) {
 
         String[] matchIds = matchService.callRiotAPIMatchIdByPuuid(puuId);
@@ -80,7 +75,6 @@ public class MainService {
         model.addAttribute("matchDtos", matchDtos);
         return matchDtos;
     }
-
     public void showRankedEmblemByTier(String tier,Model model) {
         String rankedEmblem = null;
 
@@ -127,8 +121,19 @@ public class MainService {
     }
     public void showSpellImageUrlByMatchDtos(List<MatchDto> matchDtos, Model model) {
         Set<Integer> spellKeys = matchService.extractSpellKeysFromMatches(matchDtos); //매치의 스펠키 가져옴
-        Map<Integer, String> spellUrlBySpellKey = matchService.spellImagesUrlBySpellKey(spellKeys);//스펠키로 스펠이름 뽑음
-        model.addAttribute("spellUrlBySpellKey", spellUrlBySpellKey);
+        Map<Integer, String> spellImagesUrlBySpellKey = matchService.spellImagesUrlBySpellKey(spellKeys);//스펠키로 스펠이름 뽑음
+        model.addAttribute("spellImagesUrlBySpellKey", spellImagesUrlBySpellKey);
+    }
+    public void showRuneImageUrlByMatchDtos(List<MatchDto> matchDtos,Model model){
+        Set<Integer> mainRuneIds = matchService.extractMainRuneIdsFromMatches(matchDtos);
+        Set<Integer> subRuneIds = matchService.extractSubRuneIdsFromMatches(matchDtos);
+
+        Map<Integer, String> mainRuneImagesUrlByRuneId = matchService.mainRuneImageUrlByRuneId(mainRuneIds);
+        Map<Integer, String> subRuneImagesUrlByRuneId = matchService.subRuneImageUrlByRuneId(subRuneIds);
+        model.addAttribute("mainRuneImagesUrlByRuneId",mainRuneImagesUrlByRuneId);
+        model.addAttribute("subRuneImagesUrlByRuneId",subRuneImagesUrlByRuneId);
+
+
     }
     public void showChampionImageUrlByMatchDtos(List<MatchDto> matchDtos,Model model) {
         Set<String> championNames = matchService.extractChampionNameFromMatches(matchDtos); //매치에 있는 챔피언들 불러옴
