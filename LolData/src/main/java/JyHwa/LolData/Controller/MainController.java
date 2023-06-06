@@ -41,8 +41,9 @@ public class MainController {
         mainService.showProfileIconUrlByUserDto(userDto,model);//프로필 아이콘 표시
         List<MatchDto> matchDtos = mainService.matchDtosByUserPuuid(userDto.getPuuid(), model);
         mainService.showSpellImageUrlByMatchDtos(matchDtos,model); //스펠 이미지 보여주기
-        mainService.showChampionImageUrlByMatchDtos(matchDtos,model);
-        mainService.showItemImageUrlByMatchDtos(matchDtos,model);
+        mainService.showChampionImageUrlByMatchDtos(matchDtos,model); //챔피언 이미지 보여주기
+        mainService.showItemImageUrlByMatchDtos(matchDtos,model); //아이템 이미지 보여주기
+        mainService.showRuneImageUrlByMatchDtos(matchDtos,model); //룬 이미지 보여주기
         return "searchForm";
     }
 

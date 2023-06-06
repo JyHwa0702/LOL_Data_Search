@@ -5,6 +5,7 @@ import JyHwa.LolData.Dto.MatchDto.MatchDto;
 import JyHwa.LolData.Dto.MatchDto.ParticipantDto;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -57,8 +58,31 @@ public class MatchService {
         return matchIds;
 
     }
-    public Set<Integer> extractSpellKeysFromMatches(List<MatchDto> matchDtos){
+    public Set<Integer> extractMainRuneIdsFromMatches(List<MatchDto> matchDtos) {
+        Set<Integer> mainRuneIds = new HashSet<>();
+        for (MatchDto matchDto : matchDtos) {
+            List<ParticipantDto> participantDtos = matchDto.getInfo().getParticipants();
 
+            for (ParticipantDto participantDto : participantDtos) {
+                int mainRuneId = participantDto.getPerks().getStyles().get(0).getStyle();
+                mainRuneIds.add(mainRuneId);
+            }
+        }
+        return mainRuneIds;
+    }
+    public Set<Integer> extractSubRuneIdsFromMatches(List<MatchDto> matchDtos) {
+        Set<Integer> subRuneIds = new HashSet<>();
+        for (MatchDto matchDto : matchDtos) {
+            List<ParticipantDto> participantDtos = matchDto.getInfo().getParticipants();
+
+            for (ParticipantDto participantDto : participantDtos) {
+                int mainRuneId = participantDto.getPerks().getStyles().get(1).getStyle();
+                subRuneIds.add(mainRuneId);
+            }
+        }
+        return subRuneIds;
+    }
+    public Set<Integer> extractSpellKeysFromMatches(List<MatchDto> matchDtos){
         Set<Integer> spellKeys = new HashSet<>();
         for(MatchDto matchDto : matchDtos){
             List<ParticipantDto> participantDtos = matchDto.getInfo().getParticipants();
@@ -108,6 +132,26 @@ public class MatchService {
         }
         return itemCodes;
     }
+    public Map<Integer,String> mainRuneImageUrlByRuneId(Set<Integer> mainRuneIds) {
+        Map<Integer,String> mainRuneIdUrlMap = new HashMap<>();
+
+        for(int mainRuneId : mainRuneIds) {
+            System.out.println("mainRuneKey = "+mainRuneId);
+            String mainRuneImageUrlByKey = getMainRuneImageUrlByKey(mainRuneId);
+            mainRuneIdUrlMap.put(mainRuneId,mainRuneImageUrlByKey);
+        }
+        return mainRuneIdUrlMap;
+    }
+    public Map<Integer,String> subRuneImageUrlByRuneId(Set<Integer> subRuneIds) {
+        Map<Integer,String> subRuneIdUrlMap = new HashMap<>();
+
+        for(int subRuneId : subRuneIds) {
+            System.out.println("subRuneKey = "+subRuneId);
+            String mainRuneImageUrlByKey = getSubRuneImageUrlByKey(subRuneId);
+            subRuneIdUrlMap.put(subRuneId,mainRuneImageUrlByKey);
+        }
+        return subRuneIdUrlMap;
+    }
     public Map<Integer,String> spellImagesUrlBySpellKey(Set<Integer> spellKeys){
         Map<Integer,String> spellKeyUrlMap = new HashMap<>();
 
@@ -116,7 +160,7 @@ public class MatchService {
             String spellImageUrlByKey = getSpellImageUrlByKey(spellKey);
             spellKeyUrlMap.put(spellKey,spellImageUrlByKey);
         }
-        System.out.println("spellKeyUrlMap.get(14) = "+spellKeyUrlMap.get("14"));
+        System.out.println("spellKeyUrlMap.get(14) = "+spellKeyUrlMap.get(14));
         return spellKeyUrlMap;
     }
     public Map<String,String> championImagesUrlByChampionNames(Set<String> championName){
@@ -187,6 +231,28 @@ public class MatchService {
             return null;
         }
     }
+    public JsonNode getRuneData(){
+        String spellDataUrl = lolUrl.getJsonUrl() + "/runesReforged.json"; //http://ddragon.leagueoflegends.com/cdn/13.10.1/data/ko_KR/runesReforged.json
+
+
+        try (CloseableHttpClient httpClient = HttpClientBuilder.create().build()) {
+            HttpGet request = new HttpGet(spellDataUrl);
+            try (CloseableHttpResponse response = httpClient.execute(request)) {
+                if (response.getStatusLine().getStatusCode() != 200) {
+                    System.out.println("MatchService클래스 getRuneData메서드 try문 안에 !=200");
+                    return null;
+                }
+
+                HttpEntity entity = response.getEntity();
+                JsonNode runeData = objectMapper.readTree(entity.getContent());
+                return runeData;
+
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
     public String getSpellImageUrlByKey(int spellKey) {
         JsonNode spellData = getSpellData();
         if (spellData == null) {
@@ -221,5 +287,99 @@ public class MatchService {
         return null;
     }
 
+    public String getMainRuneImageUrlByKey(int mainRuneId) {
+        JsonNode runeData = getRuneData();
+        if (runeData == null) {
+            System.out.println("getMainRuneImageUrlByKey runeData == null");
+            return null;
+        }
 
+        ArrayNode mainRuneArray = (ArrayNode) runeData;
+        for (JsonNode slotDataNode : mainRuneArray) {
+            if (slotDataNode != null && slotDataNode.get("slots") != null) {
+                JsonNode slotNode = slotDataNode.get("slots");
+                if (slotNode != null && slotNode.get("runes") != null) {
+                    JsonNode runeNode = slotNode.get("runes");
+                    if (runeNode != null && runeNode.get("id") != null && runeNode.get("id").asText().equals(String.valueOf(mainRuneId))) {
+                        String runeImageUrl = runeNode.get("icon").asText();
+                        System.out.println("MatchServcie getMainRuneImageUrlKey runeImageUrl = " + runeImageUrl);
+                        return String.format("%s/img/%s", lolUrl.getURL(), runeImageUrl);
+                    }
+                    return null;
+                }
+            }
+        }
+            System.out.println("getMainRuneImageUrlByKey 마지막 null");
+            return null;
+    }
+//        //'slots''속성의 노드 가져오기
+//        JsonNode slotsDataNode = runeData.get("slots");
+//        if (slotsDataNode == null) {
+//            System.out.println("getMainRuneImage SlotsDataNode == null");
+//            return null;
+//        }
+//        //'slots' 속성 안에 'runes' 노드 가져오기
+//        JsonNode runesDataNode = slotsDataNode.get("runes");
+//        if (runesDataNode == null) {
+//            System.out.println("getMainRuneImage runesDataNode dataNode == null");
+//            return null;
+//        }
+//
+//        //'runes' 노드의 모든 요소를 반복
+//        for (Iterator<JsonNode> it = runesDataNode.elements(); it.hasNext(); ) {
+//
+//            //현재 요소 가져옴
+//            JsonNode runeNode = it.next();
+//
+//            String runeKey_String=""+runeNode;
+//            //현재 요소가 문제없고,'key'속성이 있고, 주어진 스펠 키 값과 일치하면
+//            if (runeNode != null && runeNode.get("id") != null && runeNode.get("id").asText().equals(runeKey_String)) {
+//                //'id'속성에 이름 가져오기
+//                String runeImageUrl = runeNode.get("icon").asText(); //perk-images/Styles/Domination/Electrocute/Electrocute.png
+//                System.out.println("MatchService getMainRuneImageUrlByKey spellId = "+runeImageUrl);
+//                return String.format("%s/img/%s", lolUrl.getURL(), runeImageUrl);
+//                //https://ddragon.leagueoflegends.com/cdn/img/perk-images/Styles/Precision/PressTheAttack/PressTheAttack.png
+//            }
+//        }
+//        System.out.println("getMainRuneImageUrlByKey 마지막 null");
+//        return null;
+
+
+    public String getSubRuneImageUrlByKey(int subRuneKey){
+        JsonNode runeData = getRuneData();
+        if (runeData == null) {
+            System.out.println("getSpellImageUrlByKey runeData == null");
+            return null;
+        }
+//        //'slots''속성의 노드 가져오기
+//        JsonNode slotsDataNode = runeData.get("slots");
+//        if (slotsDataNode == null) {
+//            System.out.println("getSlotsDataNode == null");
+//        }
+//        //'slots' 속성 안에 'runes' 노드 가져오기
+//        JsonNode runesDataNode = slotsDataNode.get("runes");
+//        if (runesDataNode == null) {
+//            System.out.println("runesDataNode dataNode == null");
+//            return null;
+//        }
+
+        //'runes' 노드의 모든 요소를 반복
+        for (Iterator<JsonNode> it = runeData.elements(); it.hasNext(); ) {
+
+            //현재 요소 가져옴
+            JsonNode runeNode = it.next();
+
+//            String runeKey_String=""+runeNode;
+            //현재 요소가 문제없고,'key'속성이 있고, 주어진 스펠 키 값과 일치하면
+            if (runeNode != null && runeNode.get("id") != null && runeNode.get("id").asText().equals(String.valueOf(runeNode))) {
+                //'id'속성에 이름 가져오기
+                String runeImageUrl = runeNode.get("icon").asText(); //perk-images/Styles/7203_Whimsy.png
+                System.out.println("MatchService getSubRuneImageUrlByKey spellId = "+runeImageUrl);
+                return String.format("%s/img/%s", lolUrl.getURL(), runeImageUrl);
+                //https://ddragon.leagueoflegends.com/cdn/img/perk-images/Styles/7203_Whimsy.png
+            }
+        }
+        System.out.println("getSubRuneImageUrlByKey 마지막 null");
+        return null;
+    }
 }

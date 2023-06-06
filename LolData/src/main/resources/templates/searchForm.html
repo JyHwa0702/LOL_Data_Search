@@ -29,8 +29,8 @@
                 <th>승</th>
                 <th>챔피언</th>
                 <th>K/D/A</th>
-                <th>S/R</th>
-                <th>팀</th>
+                <th>Spell</th>
+                <th>Rune</th>
                 <th>아이템</th>
                 <th>LV/G/CS</th>
                 <th>플레이</th>
@@ -46,8 +46,10 @@
             <!-- 본인의 아이디 기준 챔피언 이름, KDA, 킬 관여 등 정보 표시 -->
             <td><img th:src="${championImagesUrlByChampionNames[participant.championName]}" alt="championImage"></td>
             <td th:text="|${participant.kills}/${participant.deaths}/${participant.assists}|"></td>
-            <td><img th:src="${spellUrlBySpellKey[participant.summoner1Id]}" alt="spellImage1">
-                <img th:src="${spellUrlBySpellKey[participant.summoner2Id]}" alt="spellImage2"></td>
+            <td><img th:src="${spellImagesUrlBySpellKey[participant.summoner1Id]}" alt="spellImage1">
+                <img th:src="${spellImagesUrlBySpellKey[participant.summoner2Id]}" alt="spellImage2"></td>
+            <td><img th:src="${mainRuneImagesUrlByRuneId[participant.perks.styles.selections.perk]}" alt="mainRuneImagesUrlByRuneId">
+                <img th:src="${subRuneImagesUrlByRuneId[participant.perks.styles.style]}" alt="subRuneImagesUrlByRuneId"> </td>
             <td>
                 <ul>
                     <li><img  th:src="${itemImagesUrlByMatchDtos[participant.item6]}"></li> <!--와드 또는 렌즈-->
