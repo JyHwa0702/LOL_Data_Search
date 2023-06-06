@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www,thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" href="css/searchForm.css">
 </head>
 <body>
   <h1>영화GG</h1>
@@ -14,15 +15,17 @@
       <button type="submit">검색</button>
   </form>
 
-  <div>
-      <img th:src="@{${profileIconUrl}}" alt="profileIconUrl">
+  <div class="profile">
+      <img class="profile-icon" th:src="@{${profileIconUrl}}" alt="profileIconUrl">
+      <div>
       <p th:text="|아이디 : ${user.summonerName}|"></p>
       <p th:text="|레벨 : ${user.summonerLevel}|"></p>
       <p th:text="|등급 : ${user.tier} ${user.rank}|"></p>
       <p th:text="|승/패 : ${user.wins}승 ${user.losses}패|"></p>
-      <img th:src="@{|/images/RankedEmblem/${rankedEmblem}|}" alt="ranked Emblem">
+      <img class="ranked-emblem" th:src="@{|/images/RankedEmblem/${rankedEmblem}|}" alt="ranked Emblem">
+      </div>
   </div>
-<div>
+<div class="match-history">
     <table>
         <thead>
             <tr>
@@ -48,20 +51,21 @@
             <td th:text="|${participant.kills}/${participant.deaths}/${participant.assists}|"></td>
             <td><img th:src="${spellImagesUrlBySpellKey[participant.summoner1Id]}" alt="spellImage1">
                 <img th:src="${spellImagesUrlBySpellKey[participant.summoner2Id]}" alt="spellImage2"></td>
-            <td><img th:src="${mainRuneImagesUrlByRuneId[participant.perks.styles.selections.perk]}" alt="mainRuneImagesUrlByRuneId">
-                <img th:src="${subRuneImagesUrlByRuneId[participant.perks.styles.style]}" alt="subRuneImagesUrlByRuneId"> </td>
+            <td><img th:src="${mainRuneImagesUrlByRuneId[participant.perks.styles[0].selections[0].perk]}" alt="mainRuneImagesUrlByRuneId">
+                <img th:src="${subRuneImagesUrlByRuneId[participant.perks.styles[1].style]}" alt="subRuneImagesUrlByRuneId"> </td>
             <td>
-                <ul>
-                    <li><img  th:src="${itemImagesUrlByMatchDtos[participant.item6]}"></li> <!--와드 또는 렌즈-->
-                    <li><img  th:src="${itemImagesUrlByMatchDtos[participant.item0]}"></li>
-                    <li><img  th:src="${itemImagesUrlByMatchDtos[participant.item1]}"></li>
-                    <li><img  th:src="${itemImagesUrlByMatchDtos[participant.item2]}"></li>
-                    <li><img  th:src="${itemImagesUrlByMatchDtos[participant.item3]}"></li>
-                    <li><img  th:src="${itemImagesUrlByMatchDtos[participant.item4]}"></li>
-                    <li><img  th:src="${itemImagesUrlByMatchDtos[participant.item5]}"></li>
+                <ul class="item-list">
+                    <li><img th:src="${itemImagesUrlByMatchDtos[participant.item6]}"></li> <!--와드 또는 렌즈-->
+                    <li><img th:src="${itemImagesUrlByMatchDtos[participant.item0]}"></li>
+                    <li><img th:src="${itemImagesUrlByMatchDtos[participant.item1]}"></li>
+                    <li><img th:src="${itemImagesUrlByMatchDtos[participant.item2]}"></li>
+                    <li><img th:src="${itemImagesUrlByMatchDtos[participant.item3]}"></li>
+                    <li><img th:src="${itemImagesUrlByMatchDtos[participant.item4]}"></li>
+                    <li><img th:src="${itemImagesUrlByMatchDtos[participant.item5]}"></li>
                 </ul>
             </td>
             <td th:text="|${participant.champLevel}/${participant.goldEarned}/${participant.totalMinionsKilled}|"></td>
+<!--            <td th:text="${participant.totalDamageDealtToChampions}"></td>-->
             <td th:text="|와드 설치:${participant.wardsPlaced} // 제거:${participant.wardsKilled}|"></td>
             <td><a href="@{|/matchDetails/${matchDto.gameId}|}">상세 정보</a> </td>
     </th:block>

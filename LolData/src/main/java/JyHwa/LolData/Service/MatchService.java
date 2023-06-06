@@ -64,7 +64,7 @@ public class MatchService {
             List<ParticipantDto> participantDtos = matchDto.getInfo().getParticipants();
 
             for (ParticipantDto participantDto : participantDtos) {
-                int mainRuneId = participantDto.getPerks().getStyles().get(0).getStyle();
+                int mainRuneId = participantDto.getPerks().getStyles().get(0).getSelections().get(0).getPerk();
                 mainRuneIds.add(mainRuneId);
             }
         }
@@ -76,8 +76,8 @@ public class MatchService {
             List<ParticipantDto> participantDtos = matchDto.getInfo().getParticipants();
 
             for (ParticipantDto participantDto : participantDtos) {
-                int mainRuneId = participantDto.getPerks().getStyles().get(1).getStyle();
-                subRuneIds.add(mainRuneId);
+                int subRuneId = participantDto.getPerks().getStyles().get(1).getStyle();
+                subRuneIds.add(subRuneId);
             }
         }
         return subRuneIds;
@@ -136,9 +136,10 @@ public class MatchService {
         Map<Integer,String> mainRuneIdUrlMap = new HashMap<>();
 
         for(int mainRuneId : mainRuneIds) {
-            System.out.println("mainRuneKey = "+mainRuneId);
+            System.out.println("mainRuneId = "+mainRuneId);
             String mainRuneImageUrlByKey = getMainRuneImageUrlByKey(mainRuneId);
             mainRuneIdUrlMap.put(mainRuneId,mainRuneImageUrlByKey);
+            System.out.println("mainRuneIdUrlMap = "+mainRuneIdUrlMap.toString());
         }
         return mainRuneIdUrlMap;
     }
@@ -146,9 +147,9 @@ public class MatchService {
         Map<Integer,String> subRuneIdUrlMap = new HashMap<>();
 
         for(int subRuneId : subRuneIds) {
-            System.out.println("subRuneKey = "+subRuneId);
-            String mainRuneImageUrlByKey = getSubRuneImageUrlByKey(subRuneId);
-            subRuneIdUrlMap.put(subRuneId,mainRuneImageUrlByKey);
+            System.out.println("subRuneId = "+subRuneId);
+            String subRuneImageUrlByKey = getSubRuneImageUrlByKey(subRuneId);
+            subRuneIdUrlMap.put(subRuneId,subRuneImageUrlByKey);
         }
         return subRuneIdUrlMap;
     }
@@ -245,6 +246,7 @@ public class MatchService {
 
                 HttpEntity entity = response.getEntity();
                 JsonNode runeData = objectMapper.readTree(entity.getContent());
+                System.out.println( "getRuneData()" +runeData.toString());
                 return runeData;
 
             }
@@ -259,7 +261,6 @@ public class MatchService {
             System.out.println("getSpellImageUrlByKey spellData == null");
             return null;
         }
-
         //'data'속성의 노드 가져오기
         JsonNode dataNode = spellData.get("data");
 
@@ -288,90 +289,48 @@ public class MatchService {
     }
 
     public String getMainRuneImageUrlByKey(int mainRuneId) {
-        JsonNode runeData = getRuneData();
-        if (runeData == null) {
+        JsonNode runesData = getRuneData();
+        if (runesData == null) {
             System.out.println("getMainRuneImageUrlByKey runeData == null");
             return null;
         }
+        //'runes' 노드의 모든 요소를 반복
+        for (JsonNode runeData : runesData) {
+            JsonNode slotsNodes = runeData.get("slots");
+            System.out.println("slotsNodes = " + slotsNodes.toString());
 
-        ArrayNode mainRuneArray = (ArrayNode) runeData;
-        for (JsonNode slotDataNode : mainRuneArray) {
-            if (slotDataNode != null && slotDataNode.get("slots") != null) {
-                JsonNode slotNode = slotDataNode.get("slots");
-                if (slotNode != null && slotNode.get("runes") != null) {
-                    JsonNode runeNode = slotNode.get("runes");
-                    if (runeNode != null && runeNode.get("id") != null && runeNode.get("id").asText().equals(String.valueOf(mainRuneId))) {
-                        String runeImageUrl = runeNode.get("icon").asText();
-                        System.out.println("MatchServcie getMainRuneImageUrlKey runeImageUrl = " + runeImageUrl);
-                        return String.format("%s/img/%s", lolUrl.getURL(), runeImageUrl);
+            for(JsonNode slotsNode : slotsNodes){
+                JsonNode runesNodes = slotsNode.get("runes");
+                for (JsonNode runesNode : runesNodes) {
+
+                    System.out.println("runesNode = " + runesNode.toString());
+                    //현재 요소 가져옴
+                    if ((runesNode != null) && (runesNode.get("id") != null) && (runesNode.get("id").asInt() == mainRuneId)) {
+                        String runeUrl = runesNode.get("icon").asText(); //perk-images/Styles/7203_Whimsy.png
+                        System.out.println("MatchService getMainRuneImageUrlByKey runeUrl = " + mainRuneId);
+                        return String.format("%s/img/%s", lolUrl.getURL(), runeUrl);
                     }
-                    return null;
                 }
             }
         }
             System.out.println("getMainRuneImageUrlByKey 마지막 null");
             return null;
-    }
-//        //'slots''속성의 노드 가져오기
-//        JsonNode slotsDataNode = runeData.get("slots");
-//        if (slotsDataNode == null) {
-//            System.out.println("getMainRuneImage SlotsDataNode == null");
-//            return null;
-//        }
-//        //'slots' 속성 안에 'runes' 노드 가져오기
-//        JsonNode runesDataNode = slotsDataNode.get("runes");
-//        if (runesDataNode == null) {
-//            System.out.println("getMainRuneImage runesDataNode dataNode == null");
-//            return null;
-//        }
-//
-//        //'runes' 노드의 모든 요소를 반복
-//        for (Iterator<JsonNode> it = runesDataNode.elements(); it.hasNext(); ) {
-//
-//            //현재 요소 가져옴
-//            JsonNode runeNode = it.next();
-//
-//            String runeKey_String=""+runeNode;
-//            //현재 요소가 문제없고,'key'속성이 있고, 주어진 스펠 키 값과 일치하면
-//            if (runeNode != null && runeNode.get("id") != null && runeNode.get("id").asText().equals(runeKey_String)) {
-//                //'id'속성에 이름 가져오기
-//                String runeImageUrl = runeNode.get("icon").asText(); //perk-images/Styles/Domination/Electrocute/Electrocute.png
-//                System.out.println("MatchService getMainRuneImageUrlByKey spellId = "+runeImageUrl);
-//                return String.format("%s/img/%s", lolUrl.getURL(), runeImageUrl);
-//                //https://ddragon.leagueoflegends.com/cdn/img/perk-images/Styles/Precision/PressTheAttack/PressTheAttack.png
-//            }
-//        }
-//        System.out.println("getMainRuneImageUrlByKey 마지막 null");
-//        return null;
+        }
+
 
 
     public String getSubRuneImageUrlByKey(int subRuneKey){
-        JsonNode runeData = getRuneData();
-        if (runeData == null) {
-            System.out.println("getSpellImageUrlByKey runeData == null");
+        JsonNode runesNodes = getRuneData();
+
+        if (runesNodes == null) {
+            System.out.println("getSpellImageUrlByKey runesNode == null");
             return null;
         }
-//        //'slots''속성의 노드 가져오기
-//        JsonNode slotsDataNode = runeData.get("slots");
-//        if (slotsDataNode == null) {
-//            System.out.println("getSlotsDataNode == null");
-//        }
-//        //'slots' 속성 안에 'runes' 노드 가져오기
-//        JsonNode runesDataNode = slotsDataNode.get("runes");
-//        if (runesDataNode == null) {
-//            System.out.println("runesDataNode dataNode == null");
-//            return null;
-//        }
 
         //'runes' 노드의 모든 요소를 반복
-        for (Iterator<JsonNode> it = runeData.elements(); it.hasNext(); ) {
+        for (JsonNode runeNode : runesNodes ) {
 
-            //현재 요소 가져옴
-            JsonNode runeNode = it.next();
-
-//            String runeKey_String=""+runeNode;
-            //현재 요소가 문제없고,'key'속성이 있고, 주어진 스펠 키 값과 일치하면
-            if (runeNode != null && runeNode.get("id") != null && runeNode.get("id").asText().equals(String.valueOf(runeNode))) {
+            if ((runeNode != null) && (runeNode.get("id") != null) && (runeNode.get("id").asInt() == subRuneKey)) {
                 //'id'속성에 이름 가져오기
                 String runeImageUrl = runeNode.get("icon").asText(); //perk-images/Styles/7203_Whimsy.png
                 System.out.println("MatchService getSubRuneImageUrlByKey spellId = "+runeImageUrl);

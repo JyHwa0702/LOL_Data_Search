@@ -41,6 +41,7 @@ public class SummonerService {
             CloseableHttpResponse response = client.execute(request);
 
             if(response.getStatusLine().getStatusCode() != 200){
+                System.out.println("not 200 null");
                 return null;
             }
 
@@ -49,8 +50,10 @@ public class SummonerService {
 
         }catch(IOException e) {
             e.printStackTrace();
+            System.out.println("null");
             return null;
         }
+        System.out.println("result = "+result);
     return result;
     }
 
