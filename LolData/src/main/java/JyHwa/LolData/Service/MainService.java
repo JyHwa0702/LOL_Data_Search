@@ -44,7 +44,10 @@ public class MainService {
         List<User> users = userRepository.findByCheckField(checkField);
         return users;
     }
+
+
     public UserDto SearchBySummonerName(String summonerName,Model model) {
+        System.out.println("MainSErvice = "+summonerName);
         SummonerDto summonerDto = summonerService.callRiotAPISummonerByName(summonerName);
         LeagueEntryDto[] leagueEntryDtos = leagueService.LeagueBySummonerId(summonerDto.getId());
         UserDto userDto = new UserDto();
@@ -53,6 +56,9 @@ public class MainService {
         model.addAttribute("user",userDto);
         return userDto;
     }
+
+
+
     public void UserDtoBysummonerDtoAndLeagueEntryDtos(UserDto userDto, SummonerDto summonerDto, LeagueEntryDto[] leagueEntryDtos) {
         LeagueEntryDto leagueEntryDto = leagueEntryDtos[0]; //솔로큐
 

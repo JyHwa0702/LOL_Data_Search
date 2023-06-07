@@ -176,9 +176,14 @@ public class MatchService {
     public Map<Integer,String> itemImagesUrlByMatchDtos(Set<Integer> itemCodes){
         Map<Integer,String> itemImagesUrlMap = new HashMap<>();
         for(int itemcode : itemCodes){
-            String itemImageUrl = String.format("%s/item/%s.png", lolUrl.getImgUrl(),itemcode);
-            //https://ddragon.leagueoflegends.com/cdn/10.6.1/img/item/3108.png
-            itemImagesUrlMap.put(itemcode,itemImageUrl);
+            if (itemcode != 0){
+                String itemImageUrl = String.format("%s/item/%s.png", lolUrl.getImgUrl(),itemcode);
+                //https://ddragon.leagueoflegends.com/cdn/10.6.1/img/item/3108.png
+                itemImagesUrlMap.put(itemcode,itemImageUrl);
+            }else {
+                String noItem = "images/item/noItem.png";
+                itemImagesUrlMap.put(itemcode,noItem);
+            }
         }
         return itemImagesUrlMap;
     }

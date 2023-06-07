@@ -9,7 +9,7 @@
   <h1>영화GG</h1>
 
   <!--검색창-->
-  <form  th:action="@{/searchBySummonerName}" method="post">
+  <form id="searchBox" th:action="@{/searchBySummonerName}" method="post">
       <label for="summonerName">소환사 이름 : </label>
       <input type="text" id="summonerName" name="summonerName" placeholder="소환사의 이름을 입력하세요." required>
       <button type="submit">검색</button>
@@ -29,46 +29,51 @@
     <table>
         <thead>
             <tr>
-                <th>승</th>
+                <th>승 / 패</th>
                 <th>챔피언</th>
                 <th>K/D/A</th>
                 <th>Spell</th>
                 <th>Rune</th>
                 <th>아이템</th>
-                <th>LV/G/CS</th>
+                <th>LV / G / CS</th>
                 <th>플레이</th>
                 <th>와드</th>
                 <th>상세 정보</th>
             </tr>
         </thead>
     <tbody>
+
     <tr th:each="matchDto: ${matchDtos}">
-    <th:block th:each="participant:${matchDto.info.participants}" th:if="${participant.summonerName == user.summonerName}">
+    <block th:each="participant:${matchDto.info.participants}" th:if="${participant.summonerName == user.summonerName}" th:class="${participant.win ? 'win':'loss'}" >
             <!-- 승/패 여부 결정 -->
-            <td th:text="${participant.win ? '승':'패'}"></td>
+            <td th:class="${participant.win ? 'win':'loss'}" th:text="${participant.win ? '승':'패'}"></td>
             <!-- 본인의 아이디 기준 챔피언 이름, KDA, 킬 관여 등 정보 표시 -->
-            <td><img th:src="${championImagesUrlByChampionNames[participant.championName]}" alt="championImage"></td>
-            <td th:text="|${participant.kills}/${participant.deaths}/${participant.assists}|"></td>
-            <td><img th:src="${spellImagesUrlBySpellKey[participant.summoner1Id]}" alt="spellImage1">
-                <img th:src="${spellImagesUrlBySpellKey[participant.summoner2Id]}" alt="spellImage2"></td>
-            <td><img th:src="${mainRuneImagesUrlByRuneId[participant.perks.styles[0].selections[0].perk]}" alt="mainRuneImagesUrlByRuneId">
-                <img th:src="${subRuneImagesUrlByRuneId[participant.perks.styles[1].style]}" alt="subRuneImagesUrlByRuneId"> </td>
-            <td>
+            <td th:class="${participant.win ? 'win':'loss'}">
+                <img class="championImage" th:src="${championImagesUrlByChampionNames[participant.championName]}" alt="championImage"></td>
+            <td th:class="${participant.win ? 'win':'loss'}" th:text="|${participant.kills}/${participant.deaths}/${participant.assists}|"></td>
+            <td th:class="${participant.win ? 'win':'loss'}">
+                <img class="spellImage" th:src="${spellImagesUrlBySpellKey[participant.summoner1Id]}" alt="spellImage1">
+                <img class="spellImage" th:src="${spellImagesUrlBySpellKey[participant.summoner2Id]}" alt="spellImage2"></td>
+            <td th:class="${participant.win ? 'win':'loss'}">
+                <img class="runeImage" th:src="${mainRuneImagesUrlByRuneId[participant.perks.styles[0].selections[0].perk]}" alt="mainRuneImagesUrlByRuneId">
+                <img class="runeImage" th:src="${subRuneImagesUrlByRuneId[participant.perks.styles[1].style]}" alt="subRuneImagesUrlByRuneId"> </td>
+            <td th:class="${participant.win ? 'win':'loss'}">
                 <ul class="item-list">
-                    <li><img th:src="${itemImagesUrlByMatchDtos[participant.item6]}"></li> <!--와드 또는 렌즈-->
-                    <li><img th:src="${itemImagesUrlByMatchDtos[participant.item0]}"></li>
-                    <li><img th:src="${itemImagesUrlByMatchDtos[participant.item1]}"></li>
-                    <li><img th:src="${itemImagesUrlByMatchDtos[participant.item2]}"></li>
-                    <li><img th:src="${itemImagesUrlByMatchDtos[participant.item3]}"></li>
-                    <li><img th:src="${itemImagesUrlByMatchDtos[participant.item4]}"></li>
-                    <li><img th:src="${itemImagesUrlByMatchDtos[participant.item5]}"></li>
+                    <li th:if="${itemImagesUrlByMatchDtos[participant.item6]} != 0"><img class="item" th:src="${itemImagesUrlByMatchDtos[participant.item6]}"></li> <!--와드 또는 렌즈-->
+                    <li th:if="${itemImagesUrlByMatchDtos[participant.item0]} != 0"><img class="item" th:src="${itemImagesUrlByMatchDtos[participant.item0]}"></li>
+                    <li th:if="${itemImagesUrlByMatchDtos[participant.item1]} != 0"><img class="item" th:src="${itemImagesUrlByMatchDtos[participant.item1]}"></li>
+                    <li th:if="${itemImagesUrlByMatchDtos[participant.item2]} != 0"><img class="item" th:src="${itemImagesUrlByMatchDtos[participant.item2]}"></li>
+                    <li th:if="${itemImagesUrlByMatchDtos[participant.item3]} != 0"><img class="item" th:src="${itemImagesUrlByMatchDtos[participant.item3]}"></li>
+                    <li th:if="${itemImagesUrlByMatchDtos[participant.item4]} != 0"><img class="item" th:src="${itemImagesUrlByMatchDtos[participant.item4]}"></li>
+                    <li th:if="${itemImagesUrlByMatchDtos[participant.item5]} != 0"><img class="item" th:src="${itemImagesUrlByMatchDtos[participant.item5]}"></li>
                 </ul>
             </td>
-            <td th:text="|${participant.champLevel}/${participant.goldEarned}/${participant.totalMinionsKilled}|"></td>
-<!--            <td th:text="${participant.totalDamageDealtToChampions}"></td>-->
-            <td th:text="|와드 설치:${participant.wardsPlaced} // 제거:${participant.wardsKilled}|"></td>
-            <td><a href="@{|/matchDetails/${matchDto.gameId}|}">상세 정보</a> </td>
-    </th:block>
+            <td th:class="${participant.win ? 'win':'loss'}" th:text="|LV ${participant.champLevel}   G ${participant.goldEarned}&emsp;CS ${participant.totalMinionsKilled}|"></td>
+            <td th:class="${participant.win ? 'win':'loss'}" th:text="|와드 설치:${participant.wardsPlaced}&emsp;제거:${participant.wardsKilled}|"></td>
+            <td th:class="${participant.win ? 'win':'loss'}">
+                <a href="@{|/matchDetails/${matchDto.gameId}|}">상세 정보</a>
+            </td>
+    </block>
     </tr>
     </tbody>
     </table>
