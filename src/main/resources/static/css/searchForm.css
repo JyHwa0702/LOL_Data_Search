@@ -1,0 +1,191 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f5f5f5;
+  margin: 0;
+  padding: 20px;
+}
+#searchBox{
+    margin-top:100px;
+    margin-bottom:100px;
+}
+h1 {
+  text-align: center;
+  color: #4A90E2;
+  font-size: 40px;
+  margin-top:50px;
+  margin-bottom: 50px;
+}
+
+form {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+label {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+input[type="text"] {
+  padding: 8px;
+  width: 250px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+button[type="submit"] {
+  padding: 8px 12px;
+  background-color: #4A90E2;
+  color: #fff;
+  border: none;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button[type="submit"]:hover {
+  background-color: #2D74CE;
+}
+
+div.profile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 30px;
+  padding: 24px;
+  background-color: #fff;
+  border: 1px solid #d8d8d8;
+  border-radius:8px;
+  box-shadow: 8px 6px 10px 0.1px rgba(0, 0, 0, 0.5);
+  max-width: 1200px;
+  margin: 0 auto;
+  margin-top:50px;
+  margin-bottom:50px;
+}
+
+div.profile img.profile-icon {
+  max-width: 100px;
+  max-height: 100px;
+  border-radius: 50%;
+  margin-right: 20px;
+}
+
+div.profile p {
+  margin: 0 0 8px;
+  color: #333;
+  font-size: 16px;
+}
+
+div.profile img.ranked-emblem {
+  max-width: 200px;
+  max-height: 200px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  max-width: 1200px;
+  margin: 0 auto;
+  border: 3px solid #d8d8d8;
+}
+
+th, td {
+  border: 3px solid #d8d8d8;
+  padding: 0px;
+  text-align: center;
+}
+
+.match-history thead {
+  background-color: #4A90E2;
+  color: #fff;
+}
+
+th {
+  font-weight: bold;
+}
+
+img.item {
+  max-width: 40px;
+  max-height: 40px;
+  display: none;
+}
+
+img.championImage {
+  max-width: 60px;
+  max-height: 60px;
+}
+
+img.spellImage {
+  max-width: 32px;
+  max-height: 32px;
+}
+
+img.runeImage {
+  max-width: 32px;
+  max-height: 32px;
+}
+
+.item-list {
+  padding:0px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.item-list li {
+  list-style: none;
+  margin: 2px;
+}
+
+.item-list li img {
+  max-width: 24px;
+  max-height: 24px;
+  display: inline-block;
+}
+
+a {
+  color: #08AEEA;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.match-history {
+  background: #fff;
+  width: 100%;
+  max-width: 1200px;
+  margin: auto;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 8px 6px 10px 0.1px rgba(0, 0, 0, 0.5);
+  margin-top:50px;
+  margin-bottom:50px;
+}
+
+.match-history th {
+  background-color: #08AEEA;
+  padding: 10px;
+  font-weight: bold;
+  border-top: 2px solid #f5f5f5;
+}
+
+.match-history tbody tr:nth-child(odd) {
+  background-color: #F9F9F9;
+}
+
+.match-history tbody tr:nth-child(even) {
+  background-color: #F5F5F5;
+}
+
+.win {
+  background-color: #CEE0FE;
+  color: black;
+}
+
+.loss{
+  background-color: #FFD5D5;
+  color: black;
+}
