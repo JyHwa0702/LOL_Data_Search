@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @SpringBootApplication
 //@EnableJpaRepositories(basePackages = "JyHwa.LolData.Repository")
 public class LolDataApplication {
+//	dd
 
 	public static void main(String[] args) {
 		SpringApplication.run(LolDataApplication.class, args);
