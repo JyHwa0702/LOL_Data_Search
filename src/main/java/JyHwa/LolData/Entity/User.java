@@ -3,7 +3,6 @@ package JyHwa.LolData.Entity;
 import JyHwa.LolData.Dto.UserDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 import javax.persistence.*;
 
@@ -13,8 +12,13 @@ import javax.persistence.*;
 @Table(name = "users")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+
+    @ManyToOne
+    @JoinColumn(name = "kakao_id")
+    private Kakao kakao;
 
     //LeagueEntryDto
     private String summonerName;
@@ -31,19 +35,20 @@ public class User {
     private long summonerLevel;
     private int checkField;
 
-    public User(UserDto userDto){
-        this.id =userDto.getId();
-        this.summonerName =userDto.getSummonerName();
-        this.queueType =userDto.getQueueType();
-        this.tier =userDto.getTier();
-        this.rank =userDto.getRank();
-        this.leaguePoints =userDto.getLeaguePoints();
-        this.wins =userDto.getWins();
-        this.losses =userDto.getLosses();
-        this.puuid = userDto.getPuuid();
-        this.profileIconId=userDto.getProfileIconId();
-        this.summonerLevel =userDto.getSummonerLevel();
-        this.checkField =userDto.getCheckField();
+    public User(UserDto usersDto){
+        this.id = usersDto.getId();
+        this.summonerName = usersDto.getSummonerName();
+        this.queueType = usersDto.getQueueType();
+        this.tier = usersDto.getTier();
+        this.rank = usersDto.getRank();
+        this.leaguePoints = usersDto.getLeaguePoints();
+        this.wins = usersDto.getWins();
+        this.losses = usersDto.getLosses();
+        this.puuid = usersDto.getPuuid();
+        this.profileIconId= usersDto.getProfileIconId();
+        this.summonerLevel = usersDto.getSummonerLevel();
+        this.checkField = usersDto.getCheckField();
+        this.kakao= usersDto.getKakao();
     }
 
 }

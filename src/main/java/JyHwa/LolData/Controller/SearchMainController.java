@@ -1,9 +1,8 @@
 package JyHwa.LolData.Controller;
 
 import JyHwa.LolData.Dto.MatchDto.MatchDto;
-import JyHwa.LolData.Dto.MatchDto.ParticipantDto;
 import JyHwa.LolData.Dto.UserDto;
-import JyHwa.LolData.Service.MainService;
+import JyHwa.LolData.Service.SearchMainService;
 import JyHwa.LolData.Service.MatchService;
 import JyHwa.LolData.Service.SummonerService;
 import lombok.RequiredArgsConstructor;
@@ -16,16 +15,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 @Controller
 @RequiredArgsConstructor
 @Slf4j
 @ToString
-public class MainController {
+public class SearchMainController {
 
-    private final MainService mainService;
+    private final SearchMainService searchMainService;
     private final SummonerService summonerService;
     private final MatchService matchService;
 
@@ -36,16 +33,17 @@ public class MainController {
 
     @PostMapping("/searchBySummonerName")
     public String SearchByName(String summonerName, Model model){
-        UserDto userDto = mainService.SearchBySummonerName(summonerName,model);
-        mainService.showRankedEmblemByTier(userDto.getTier(),model);
-        mainService.showProfileIconUrlByUserDto(userDto,model);//프로필 아이콘 표시
-        List<MatchDto> matchDtos = mainService.matchDtosByUserPuuid(userDto.getPuuid(), model);
-        mainService.showSpellImageUrlByMatchDtos(matchDtos,model); //스펠 이미지 보여주기
-        mainService.showChampionImageUrlByMatchDtos(matchDtos,model); //챔피언 이미지 보여주기
-        mainService.showItemImageUrlByMatchDtos(matchDtos,model); //아이템 이미지 보여주기
-        mainService.showRuneImageUrlByMatchDtos(matchDtos,model); //룬 이미지 보여주기
+        UserDto usersDto = searchMainService.SearchBySummonerName(summonerName,model);
+        searchMainService.showRankedEmblemByTier(usersDto.getTier(),model);
+        searchMainService.showProfileIconUrlByUserDto(usersDto,model);//프로필 아이콘 표시
+        List<MatchDto> matchDtos = searchMainService.matchDtosByUserPuuid(usersDto.getPuuid(), model);
+        searchMainService.showSpellImageUrlByMatchDtos(matchDtos,model); //스펠 이미지 보여주기
+        searchMainService.showChampionImageUrlByMatchDtos(matchDtos,model); //챔피언 이미지 보여주기
+        searchMainService.showItemImageUrlByMatchDtos(matchDtos,model); //아이템 이미지 보여주기
+        searchMainService.showRuneImageUrlByMatchDtos(matchDtos,model); //룬 이미지 보여주기
         return "searchForm";
     }
+
 
     @GetMapping("/matchDetails/{matchId}")
     public String matchDetails(@PathVariable String matchId,Model model){

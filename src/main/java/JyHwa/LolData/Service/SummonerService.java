@@ -1,11 +1,8 @@
 package JyHwa.LolData.Service;
 
-import JyHwa.LolData.Dto.MatchDto.MatchDto;
 import JyHwa.LolData.Dto.SummonerDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -28,7 +25,8 @@ public class SummonerService {
     private final String serverUrl =  "https://kr.api.riotgames.com";
     @Transactional
     public SummonerDto callRiotAPISummonerByName(String summonerName){
-        summonerName.replaceAll(" ","%20"); //빈공간 %20으로 바꾸기
+
+        summonerName = summonerName.replaceAll(" ", "%20");//빈공간 %20으로 바꾸기
 
         SummonerDto result;
 

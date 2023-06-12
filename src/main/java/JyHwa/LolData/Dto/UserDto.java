@@ -1,5 +1,6 @@
 package JyHwa.LolData.Dto;
 
+import JyHwa.LolData.Entity.Kakao;
 import JyHwa.LolData.Entity.User;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,20 +24,22 @@ public class UserDto {
     private int profileIconId;
     private long summonerLevel;
     private int checkField;
+    private Kakao kakao;
 
     public UserDto(User user){
-        this.id =user.getId();
-        this.summonerName =user.getSummonerName();
-        this.queueType =user.getQueueType();
-        this.tier =user.getTier();
-        this.rank =user.getRank();
-        this.leaguePoints =user.getLeaguePoints();
-        this.wins =user.getWins();
-        this.losses =user.getLosses();
+        this.id = user.getId();
+        this.summonerName = user.getSummonerName();
+        this.queueType = user.getQueueType();
+        this.tier = user.getTier();
+        this.rank = user.getRank();
+        this.leaguePoints = user.getLeaguePoints();
+        this.wins = user.getWins();
+        this.losses = user.getLosses();
         this.puuid = user.getPuuid();
         this.profileIconId = user.getProfileIconId();
-        this.summonerLevel =user.getSummonerLevel();
-        this.checkField =user.getCheckField();
+        this.summonerLevel = user.getSummonerLevel();
+        this.checkField = user.getCheckField();
+        this.kakao = user.getKakao();
     }
 
     public User toEntity(){

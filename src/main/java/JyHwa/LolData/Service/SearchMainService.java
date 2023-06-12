@@ -1,7 +1,7 @@
 package JyHwa.LolData.Service;
 
 import JyHwa.LolData.Dto.LeagueEntryDto.LeagueEntryDto;
-import JyHwa.LolData.Dto.LolUrl;
+import JyHwa.LolData.Dto.LolUrlDto;
 import JyHwa.LolData.Dto.MatchDto.MatchDto;
 import JyHwa.LolData.Dto.SummonerDto;
 import JyHwa.LolData.Dto.UserDto;
@@ -13,14 +13,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
-public class MainService {
+public class SearchMainService {
 
     private final SummonerRepository summonerRepository;
     private final UserRepository userRepository;
@@ -28,17 +27,17 @@ public class MainService {
     private final LeagueService leagueService;
     private final MatchService matchService;
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final LolUrl lolUrl = new LolUrl();
+    private final LolUrlDto lolUrlDto = new LolUrlDto();
 
 
     public void saveSummoner(SummonerDto summonerDto) {
         summonerDto.setCheckField(1);
         summonerRepository.save(summonerDto.toEntity());
     }
-    public UserDto saveUser(UserDto userDto) {
-        userDto.setCheckField(1);
-        User user = userRepository.save(userDto.toEntity());
-        return userDto;
+    public User saveUser(UserDto usersDto) {
+        usersDto.setCheckField(1);
+        User user = userRepository.save(usersDto.toEntity());
+        return user;
     }
     public List<User> FindBycheckField(int checkField) {
         List<User> users = userRepository.findByCheckField(checkField);
@@ -46,33 +45,33 @@ public class MainService {
     }
 
 
-    public UserDto SearchBySummonerName(String summonerName,Model model) {
+    public UserDto SearchBySummonerName(String summonerName, Model model) {
         System.out.println("MainSErvice = "+summonerName);
         SummonerDto summonerDto = summonerService.callRiotAPISummonerByName(summonerName);
         LeagueEntryDto[] leagueEntryDtos = leagueService.LeagueBySummonerId(summonerDto.getId());
-        UserDto userDto = new UserDto();
+        UserDto usersDto = new UserDto();
 
-        UserDtoBysummonerDtoAndLeagueEntryDtos(userDto, summonerDto, leagueEntryDtos);
-        model.addAttribute("user",userDto);
-        return userDto;
+        UserDtoBysummonerDtoAndLeagueEntryDtos(usersDto, summonerDto, leagueEntryDtos);
+        model.addAttribute("user", usersDto);
+        return usersDto;
     }
 
 
 
-    public void UserDtoBysummonerDtoAndLeagueEntryDtos(UserDto userDto, SummonerDto summonerDto, LeagueEntryDto[] leagueEntryDtos) {
+    public void UserDtoBysummonerDtoAndLeagueEntryDtos(UserDto usersDto, SummonerDto summonerDto, LeagueEntryDto[] leagueEntryDtos) {
         LeagueEntryDto leagueEntryDto = leagueEntryDtos[0]; //솔로큐
 
-        userDto.setSummonerName(summonerDto.getName());
-        userDto.setQueueType(leagueEntryDto.getQueueType());
-        userDto.setTier(leagueEntryDto.getTier());
-        userDto.setRank(leagueEntryDto.getRank());
-        userDto.setLeaguePoints(leagueEntryDto.getLeaguePoints());
-        userDto.setWins(leagueEntryDto.getWins());
-        userDto.setLosses(leagueEntryDto.getLosses());
-        userDto.setPuuid((summonerDto.getPuuid()));
-        userDto.setProfileIconId(summonerDto.getProfileIconId());
-        userDto.setSummonerLevel(summonerDto.getSummonerLevel());
-        userDto.setCheckField(summonerDto.getCheckField());
+        usersDto.setSummonerName(summonerDto.getName());
+        usersDto.setQueueType(leagueEntryDto.getQueueType());
+        usersDto.setTier(leagueEntryDto.getTier());
+        usersDto.setRank(leagueEntryDto.getRank());
+        usersDto.setLeaguePoints(leagueEntryDto.getLeaguePoints());
+        usersDto.setWins(leagueEntryDto.getWins());
+        usersDto.setLosses(leagueEntryDto.getLosses());
+        usersDto.setPuuid((summonerDto.getPuuid()));
+        usersDto.setProfileIconId(summonerDto.getProfileIconId());
+        usersDto.setSummonerLevel(summonerDto.getSummonerLevel());
+        usersDto.setCheckField(summonerDto.getCheckField());
     }
     public List<MatchDto> matchDtosByUserPuuid(String puuId,Model model) {
 
@@ -119,9 +118,9 @@ public class MainService {
         }
         model.addAttribute("rankedEmblem",rankedEmblem); //랭크 엠블럼 표시
     }
-    public void showProfileIconUrlByUserDto(UserDto userDto,Model model) {
-        int profileIconId = userDto.getProfileIconId();
-        String profileIconUrl = String.format("%s/profileicon/%d.png", lolUrl.getImgUrl(), profileIconId);
+    public void showProfileIconUrlByUserDto(UserDto usersDto, Model model) {
+        int profileIconId = usersDto.getProfileIconId();
+        String profileIconUrl = String.format("%s/profileicon/%d.png", lolUrlDto.getImgUrl(), profileIconId);
         //http://ddragon.leagueoflegends.com/cdn/profileicon/3584.png
         model.addAttribute("profileIconUrl",profileIconUrl); //프로필 아이콘 표시
     }

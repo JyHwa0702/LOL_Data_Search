@@ -3,7 +3,7 @@ package JyHwa.LolData.Dto;
 import lombok.Data;
 
 @Data
-public class LolUrl {
+public class LolUrlDto {
 
     String URL = "http://ddragon.leagueoflegends.com/cdn";
     String version = "13.10.1";

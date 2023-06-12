@@ -1,17 +1,10 @@
 package JyHwa.LolData.Controller;
 
 import JyHwa.LolData.Dto.MatchDto.MatchDto;
-import JyHwa.LolData.Dto.UserDto;
-import JyHwa.LolData.Entity.User;
-import JyHwa.LolData.Service.MainService;
 import JyHwa.LolData.Service.MatchService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Stream;
 
 @RestController

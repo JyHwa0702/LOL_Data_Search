@@ -1,11 +1,10 @@
 package JyHwa.LolData.Service;
 
-import JyHwa.LolData.Dto.LolUrl;
+import JyHwa.LolData.Dto.LolUrlDto;
 import JyHwa.LolData.Dto.MatchDto.MatchDto;
 import JyHwa.LolData.Dto.MatchDto.ParticipantDto;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -24,7 +23,7 @@ import java.util.*;
 @PropertySource(ignoreResourceNotFound = false,value = "classpath:riotApiKey.properties")
 public class MatchService {
     private ObjectMapper objectMapper = new ObjectMapper();
-    private final LolUrl lolUrl = new LolUrl();
+    private final LolUrlDto lolUrlDto = new LolUrlDto();
 
     @Value("${riot.api.key}")
     private String myKey;
@@ -167,7 +166,7 @@ public class MatchService {
     public Map<String,String> championImagesUrlByChampionNames(Set<String> championName){
         Map<String,String> championImagesUrlMap = new HashMap<>();
         for (String chapionName:championName){
-            String championImageUrl = String.format("%s/champion/%s.png",lolUrl.getImgUrl(),chapionName);
+            String championImageUrl = String.format("%s/champion/%s.png", lolUrlDto.getImgUrl(),chapionName);
             //https://ddragon.leagueoflegends.com/cdn/10.6.1/img/champion/<champion_name>.png
             championImagesUrlMap.put(chapionName,championImageUrl);
         }
@@ -177,7 +176,7 @@ public class MatchService {
         Map<Integer,String> itemImagesUrlMap = new HashMap<>();
         for(int itemcode : itemCodes){
             if (itemcode != 0){
-                String itemImageUrl = String.format("%s/item/%s.png", lolUrl.getImgUrl(),itemcode);
+                String itemImageUrl = String.format("%s/item/%s.png", lolUrlDto.getImgUrl(),itemcode);
                 //https://ddragon.leagueoflegends.com/cdn/10.6.1/img/item/3108.png
                 itemImagesUrlMap.put(itemcode,itemImageUrl);
             }else {
@@ -217,7 +216,7 @@ public class MatchService {
         return matchDtos;
     }
     public JsonNode getSpellData() {
-        String spellDataUrl = lolUrl.getJsonUrl() + "/summoner.json"; //http://ddragon.leagueoflegends.com/cdn/13.10.1/data/ko_KR/summoner.json
+        String spellDataUrl = lolUrlDto.getJsonUrl() + "/summoner.json"; //http://ddragon.leagueoflegends.com/cdn/13.10.1/data/ko_KR/summoner.json
 
         try (CloseableHttpClient httpClient = HttpClientBuilder.create().build()) {
             HttpGet request = new HttpGet(spellDataUrl);
@@ -238,7 +237,7 @@ public class MatchService {
         }
     }
     public JsonNode getRuneData(){
-        String spellDataUrl = lolUrl.getJsonUrl() + "/runesReforged.json"; //http://ddragon.leagueoflegends.com/cdn/13.10.1/data/ko_KR/runesReforged.json
+        String spellDataUrl = lolUrlDto.getJsonUrl() + "/runesReforged.json"; //http://ddragon.leagueoflegends.com/cdn/13.10.1/data/ko_KR/runesReforged.json
 
 
         try (CloseableHttpClient httpClient = HttpClientBuilder.create().build()) {
@@ -286,7 +285,7 @@ public class MatchService {
                 //'id'속성에 이름 가져오기
                 String spellId = spellNode.get("id").asText();
                 System.out.println("MatchService getSpellImageUrlByKey spellId = "+spellId);
-                return String.format("%s/spell/%s.png", lolUrl.getImgUrl(), spellId);
+                return String.format("%s/spell/%s.png", lolUrlDto.getImgUrl(), spellId);
             }
         }
         System.out.println("getSpellImageUrlByKey 마지막 null");
@@ -313,7 +312,7 @@ public class MatchService {
                     if ((runesNode != null) && (runesNode.get("id") != null) && (runesNode.get("id").asInt() == mainRuneId)) {
                         String runeUrl = runesNode.get("icon").asText(); //perk-images/Styles/7203_Whimsy.png
                         System.out.println("MatchService getMainRuneImageUrlByKey runeUrl = " + mainRuneId);
-                        return String.format("%s/img/%s", lolUrl.getURL(), runeUrl);
+                        return String.format("%s/img/%s", lolUrlDto.getURL(), runeUrl);
                     }
                 }
             }
@@ -339,7 +338,7 @@ public class MatchService {
                 //'id'속성에 이름 가져오기
                 String runeImageUrl = runeNode.get("icon").asText(); //perk-images/Styles/7203_Whimsy.png
                 System.out.println("MatchService getSubRuneImageUrlByKey spellId = "+runeImageUrl);
-                return String.format("%s/img/%s", lolUrl.getURL(), runeImageUrl);
+                return String.format("%s/img/%s", lolUrlDto.getURL(), runeImageUrl);
                 //https://ddragon.leagueoflegends.com/cdn/img/perk-images/Styles/7203_Whimsy.png
             }
         }
