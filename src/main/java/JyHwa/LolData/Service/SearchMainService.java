@@ -1,5 +1,6 @@
 package JyHwa.LolData.Service;
 
+import JyHwa.LolData.Dto.KakaoDto;
 import JyHwa.LolData.Dto.LeagueEntryDto.LeagueEntryDto;
 import JyHwa.LolData.Dto.LolUrlDto;
 import JyHwa.LolData.Dto.MatchDto.MatchDto;
@@ -10,15 +11,18 @@ import JyHwa.LolData.Repository.SummonerRepository;
 import JyHwa.LolData.Repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class SearchMainService {
 
     private final SummonerRepository summonerRepository;
@@ -26,6 +30,7 @@ public class SearchMainService {
     private final SummonerService summonerService;
     private final LeagueService leagueService;
     private final MatchService matchService;
+    private final KakaoService kakaoService;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final LolUrlDto lolUrlDto = new LolUrlDto();
 
@@ -34,10 +39,18 @@ public class SearchMainService {
         summonerDto.setCheckField(1);
         summonerRepository.save(summonerDto.toEntity());
     }
-    public User saveUser(UserDto usersDto) {
-        usersDto.setCheckField(1);
-        User user = userRepository.save(usersDto.toEntity());
-        return user;
+    public User saveUser(UserDto userDto) {
+        Long id = userDto.toEntity().getId();
+        log.info("Long id = userDto.toEntity().getId(); = "+ id);
+        Optional<User> userById = userRepository.findById(id);
+
+        if(userById.isEmpty()){
+            User savedUser = userRepository.save(userDto.toEntity());
+            return savedUser;
+        }
+
+        return null;
+
     }
     public List<User> FindBycheckField(int checkField) {
         List<User> users = userRepository.findByCheckField(checkField);
@@ -52,7 +65,7 @@ public class SearchMainService {
         UserDto usersDto = new UserDto();
 
         UserDtoBysummonerDtoAndLeagueEntryDtos(usersDto, summonerDto, leagueEntryDtos);
-        model.addAttribute("user", usersDto);
+        model.addAttribute("userId", usersDto.getId());
         return usersDto;
     }
 

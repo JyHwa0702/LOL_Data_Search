@@ -23,12 +23,13 @@ public class CheckingUserMainController {
     private final KakaoService kakaoService;
 
 
-    @PostMapping("/checkingUser")
-    public String checkingUser(UserDto usersDto){
 
-        User savedUser = searchMainService.saveUser(usersDto);
-        checkingUserMainService.checkingUser(savedUser);
-        return "redirect:/searchBySummonerName?summonerName=" + savedUser.getSummonerName();
+    @PostMapping("/checkingUser")
+    public String checkingUser(Long userId,Long kakaoId){
+
+        User user = checkingUserMainService.checkingUser(userId, kakaoId);
+
+        return "redirect:/searchBySummonerName?summonerName=" + user.getSummonerName();
     }
 
     @GetMapping("/checkingUser/{kakaoId}")

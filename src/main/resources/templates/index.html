@@ -7,12 +7,16 @@
 <body>
 
 <h1>영화GG</h1>
+
 <form  th:action="@{/searchBySummonerName}" method="post">
     <label for="summonerName">소환사 이름 : </label>
     <input type="text" id="summonerName" name="summonerName" placeholder="소환사의 이름을 입력하세요." required>
     <button type="submit">검색</button>
-
 </form>
+
+<a th:href="@{${kakaoTokenUrl}}">
+    Kakao 로그인
+</a>
 
 </body>
 </html>

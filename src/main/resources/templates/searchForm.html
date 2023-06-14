@@ -7,7 +7,7 @@
 </head>
 <body>
   <h1>영화GG</h1>
-
+  <a th:href="@{/checkingUser/{kakaoId}(kakaoId=@{kakaoId})}">유저 리스트 확인</a>
   <!--검색창-->
   <form id="searchBox" th:action="@{/searchBySummonerName}" method="post">
       <label for="summonerName">소환사 이름 : </label>
@@ -16,10 +16,10 @@
   </form>
   <div class="profile">
       <form th:action="@{/checkingUser}" method="post">
-          <input type="hidden" name="usersDto" value="${user}">
+          <input type="hidden" name="userId" th:value="${userId}">
+          <input type="hidden" name="kakaoId" th:value="${kakaoId}">
           <button type="submit">체크</button>
       </form>
-      <div class="match-history">
       <img class="profile-icon" th:src="@{${profileIconUrl}}" alt="profileIconUrl">
       <div>
       <p th:text="|아이디 : ${user.summonerName}|"></p>
@@ -29,6 +29,7 @@
       <img class="ranked-emblem" th:src="@{|/images/RankedEmblem/${rankedEmblem}|}" alt="ranked Emblem">
       </div>
   </div>
+  <div class="match-history">
     <table>
         <thead>
             <tr>

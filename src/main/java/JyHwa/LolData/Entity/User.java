@@ -16,7 +16,7 @@ public class User {
     private Long id;
 
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "kakao_id")
     private Kakao kakao;
 
