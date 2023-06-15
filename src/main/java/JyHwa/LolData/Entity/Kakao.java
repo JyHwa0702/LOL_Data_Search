@@ -19,7 +19,7 @@ public class Kakao {
     private Long id;
     private String email;
     private String nickname;
-    @OneToMany(mappedBy = "kakao",fetch = FetchType.LAZY,cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "kakao",fetch = FetchType.EAGER,cascade = CascadeType.REMOVE)
     private List<User> users;
 
     public Kakao(KakaoDto kakaoDto){

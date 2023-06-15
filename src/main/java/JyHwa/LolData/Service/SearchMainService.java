@@ -39,17 +39,22 @@ public class SearchMainService {
         summonerDto.setCheckField(1);
         summonerRepository.save(summonerDto.toEntity());
     }
-    public User saveUser(UserDto userDto) {
-        Long id = userDto.toEntity().getId();
-        log.info("Long id = userDto.toEntity().getId(); = "+ id);
-        Optional<User> userById = userRepository.findById(id);
+    public User saveUser(UserDto userDto,Model model) {
 
-        if(userById.isEmpty()){
-            User savedUser = userRepository.save(userDto.toEntity());
+        Optional<User> bySummonerName = userRepository.findBySummonerName(userDto.getSummonerName());
+
+        if(bySummonerName.isEmpty()){
+            User user = userDto.toEntity();
+
+            User savedUser = userRepository.save(user);
+
+            Long id = savedUser.getId();
+            log.info("savedUser id = "+id);
+            model.addAttribute("userId", id);
             return savedUser;
         }
-
-        return null;
+        model.addAttribute("userId",userDto.getId());
+        return userDto.toEntity();
 
     }
     public List<User> FindBycheckField(int checkField) {
@@ -62,11 +67,11 @@ public class SearchMainService {
         System.out.println("MainSErvice = "+summonerName);
         SummonerDto summonerDto = summonerService.callRiotAPISummonerByName(summonerName);
         LeagueEntryDto[] leagueEntryDtos = leagueService.LeagueBySummonerId(summonerDto.getId());
-        UserDto usersDto = new UserDto();
+        UserDto userDto = new UserDto();
 
-        UserDtoBysummonerDtoAndLeagueEntryDtos(usersDto, summonerDto, leagueEntryDtos);
-        model.addAttribute("userId", usersDto.getId());
-        return usersDto;
+        UserDtoBysummonerDtoAndLeagueEntryDtos(userDto, summonerDto, leagueEntryDtos);
+        model.addAttribute("user",userDto);
+        return userDto;
     }
 
 

@@ -8,6 +8,7 @@ import JyHwa.LolData.Repository.KakaoRepository;
 import JyHwa.LolData.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.bytebuddy.implementation.bytecode.Throw;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
@@ -38,19 +39,27 @@ public class CheckingUserMainService {
     }
 
     public User checkingUser(Long userId,Long kakaoId){
-        Optional<User> userById = userRepository.findById(userId);
-        Optional<Kakao> kakaoById = kakaoRepository.findById(kakaoId);
+//        Optional<User> userById = userRepository.findById(userId);
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        Kakao kakao = kakaoRepository.findById(kakaoId).orElseThrow(() -> new RuntimeException("Kakao not found"));
 
-        KakaoDto kakaoDto = new KakaoDto(kakaoById.get());
-        List<User> users = kakaoDto.getUsers();
-        users.add(userById.get());
-        kakaoDto.setUsers(users);
+        log.info("user = "+user+" kakao = "+kakao);
+
+        UserDto userDto = new UserDto(user);
+        userDto.setKakao(kakao);
+        User userSavedKakao = userDto.toEntity();
+        userRepository.save(userSavedKakao);
+
+//        KakaoDto kakaoDto = new KakaoDto(kakaoById.get());
+//        List<User> users = kakaoDto.getUsers();
+//        users.add(userById.get());
+//        kakaoDto.setUsers(users);
 
 
 
-        log.info("kakaoDto.getUsers() = "+kakaoDto.getUsers().toString());
+        log.info("userSavedKakao = "+userSavedKakao.toString());
 
-        return userById.get();
+        return userSavedKakao;
     }
 
     public void showCheckingUser(Long kakaoId, Model model){

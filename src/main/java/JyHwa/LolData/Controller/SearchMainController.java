@@ -3,6 +3,7 @@ package JyHwa.LolData.Controller;
 import JyHwa.LolData.Dto.KakaoDto;
 import JyHwa.LolData.Dto.MatchDto.MatchDto;
 import JyHwa.LolData.Dto.UserDto;
+import JyHwa.LolData.Entity.Kakao;
 import JyHwa.LolData.Service.KakaoService;
 import JyHwa.LolData.Service.SearchMainService;
 import JyHwa.LolData.Service.MatchService;
@@ -11,12 +12,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.neo4j.Neo4jProperties;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,7 +28,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Slf4j
 @ToString
-@PropertySource(ignoreResourceNotFound = false, value = "classpath:kakaoApiKey.properties")
+@PropertySource(value = "classpath:kakaoApiKey.properties")
 public class SearchMainController {
 
     private final SearchMainService searchMainService;
@@ -39,27 +43,36 @@ public class SearchMainController {
     private String redirect_uri;
 
     @GetMapping("/")
-    public String indexPage(Model model) {
+    public String indexPage(HttpSession session, Model model) {
         String kakaoTokenUrl = kakaoService.getKakaoCodeUrl();
         log.info("kakaoTokenUrl = "+kakaoTokenUrl);
         model.addAttribute("kakaoTokenUrl",kakaoTokenUrl);
+
+        Long kakaoId = (Long) session.getAttribute("kakaoId");
+
+        log.info("kakaoId from session = "+kakaoId);
+        model.addAttribute("kakaoId",kakaoId);
         return "index";
     }
 
     @GetMapping("/oauth/kakao")
-    public String kakaoLogin(@RequestParam("code") String code,Model model){
+    public String kakaoLogin(@RequestParam("code") String code,HttpSession session){
         log.info("code를 받습니다 = "+code);
         String kakaoAccessToken = kakaoService.getKakaoAccessToken(code);
         JsonNode kakaoInfo = kakaoService.getKakaoInfo(kakaoAccessToken);
         log.info("kakaoInfo = "+kakaoInfo);
-        kakaoService.saveKakao(kakaoInfo,model); // 카카오 아이디 저장 및 kakaoId model넘기기
+        Kakao kakao = kakaoService.saveKakao(kakaoInfo);// 카카오 아이디 저장 및 kakaoId model넘기기
+
+        session.setAttribute("kakaoId",kakao.getId());
+
         return "redirect:/";
     }
 
 
-    @PostMapping("/searchBySummonerName")
-    public String SearchByName(String summonerName, Optional<Long> kakaoId, Model model){
-        UserDto usersDto = searchMainService.SearchBySummonerName(summonerName,model); //userId model
+    @GetMapping("/searchBySummonerName")
+    public String SearchByName(String summonerName, Model model){
+//        log.info("SearchByName kakaoId 파라미터 값 = "+);
+        UserDto usersDto = searchMainService.SearchBySummonerName(summonerName,model); //model user,userDto
         searchMainService.showRankedEmblemByTier(usersDto.getTier(),model);
         searchMainService.showProfileIconUrlByUserDto(usersDto,model);//프로필 아이콘 표시
         List<MatchDto> matchDtos = searchMainService.matchDtosByUserPuuid(usersDto.getPuuid(), model);
@@ -67,12 +80,13 @@ public class SearchMainController {
         searchMainService.showChampionImageUrlByMatchDtos(matchDtos,model); //챔피언 이미지 보여주기
         searchMainService.showItemImageUrlByMatchDtos(matchDtos,model); //아이템 이미지 보여주기
         searchMainService.showRuneImageUrlByMatchDtos(matchDtos,model); //룬 이미지 보여주기
-
-        searchMainService.saveUser(usersDto); //db에 유저 저장
-
-        if (kakaoId.isPresent()){
-            model.addAttribute("kakaoId",kakaoId);
-        }
+        log.info("userDto = "+usersDto.toString());
+        searchMainService.saveUser(usersDto,model); //db에 유저 저장, userId model
+//        if(kakaoId !=null){
+//            log.info("kakaoId = "+kakaoId);
+//            model.addAttribute("kakaoId",kakaoId);
+//
+//        }
 
         return "searchForm";
     }

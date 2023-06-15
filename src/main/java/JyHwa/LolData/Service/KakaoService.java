@@ -23,7 +23,6 @@ import org.apache.http.message.BasicNameValuePair;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
 
 import javax.transaction.Transactional;
 import java.io.*;
@@ -151,7 +150,7 @@ public class KakaoService {
         }
     }
     @Transactional
-    public void saveKakao(JsonNode kakaoInfo, Model model){
+    public Kakao saveKakao(JsonNode kakaoInfo){
 
 //      properties{
 //          nickname
@@ -159,7 +158,6 @@ public class KakaoService {
 //      kakao_account{
 //          email
 //      }
-
         String email = kakaoInfo.get("kakao_account").get("email").asText();
         String nickname = kakaoInfo.get("properties").get("nickname").asText();
 
@@ -170,15 +168,17 @@ public class KakaoService {
 
         Kakao kakao = kakaoDto.toEntity();
         log.info("savedKakao before = "+kakao.toString());
-        Kakao savedKakao = kakaoRepository.save(kakao);
-        log.info("savedKakao after = "+savedKakao.toString());
-
-        model.addAttribute("kakaoId",savedKakao.getId());
-        log.info("saved kakaoId = "+savedKakao.getId());
+        Optional<Kakao> byEmail = kakaoRepository.findByEmail(kakao.getEmail());
+        if(byEmail.isEmpty()){
+            Kakao savedKakao = kakaoRepository.save(kakao);
+            log.info("savedKakao after = "+savedKakao.toString());
+            return savedKakao;
+        }
+        return kakao;
     }
 
     @Transactional
-    public void saveUser(User user, Long kakaoId){
+    public void saveUserInKakao(User user, Long kakaoId){
         Optional<Kakao> kakao = kakaoRepository.findById(kakaoId);
         if(kakao.isPresent()){
             UserDto usersDto = new UserDto(user);

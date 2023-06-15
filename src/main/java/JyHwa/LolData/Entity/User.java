@@ -3,6 +3,7 @@ package JyHwa.LolData.Entity;
 import JyHwa.LolData.Dto.UserDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 
@@ -10,13 +11,14 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Getter
 @Table(name = "users")
+@ToString
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "kakao_id")
     private Kakao kakao;
 
