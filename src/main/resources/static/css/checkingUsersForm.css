@@ -1,0 +1,63 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+}
+
+.user-list {
+    background: #fff;
+    width: 100%;
+    max-width: 800px;
+    margin: auto;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 8px 6px 10px 0.1px rgba(0, 0, 0, 0.2);
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 16px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.user-row {
+    border-bottom: 1px solid #e6e6e6;
+}
+
+.user-row:nth-child(even) {
+    background-color: #fafafa;
+}
+
+.user-icon {
+    padding: 12px 24px;
+    text-align: center;
+}
+
+.user-name {
+    padding: 12px 24px;
+    font-weight: bold;
+}
+
+.user-remove {
+    padding: 12px 24px;
+    text-align: center;
+}
+
+.remove-btn {
+    padding: 4px 8px;
+    background-color: #EA3546;
+    color: #fff;
+    border: none;
+    font-size: 14px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.remove-btn:hover {
+    background-color: #C81928;
+}

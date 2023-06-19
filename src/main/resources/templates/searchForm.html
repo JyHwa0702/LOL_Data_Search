@@ -7,11 +7,15 @@
 </head>
 <body>
   <h1>영화GG</h1>
-  <a th:href="@{/checkingUser/{kakaoId}(kakaoId=@{kakaoId})}">유저 리스트 확인</a>
+
+
+  <a th:href="@{/checkingUser/{kakaoId}(kakaoId=${kakaoId})}">유저 리스트 확인</a>
+
   <!--검색창-->
   <form id="searchBox" th:action="@{/searchBySummonerName}" method="get">
       <label for="summonerName">소환사 이름 : </label>
       <input type="text" id="summonerName" name="summonerName" placeholder="소환사의 이름을 입력하세요." required>
+      <input type="hidden" name="kakaoId" th:value="${kakaoId}">
       <button type="submit">검색</button>
   </form>
   <div class="profile">

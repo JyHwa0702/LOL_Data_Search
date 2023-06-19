@@ -1,11 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" href="/css/checkingUsersForm.css">
 </head>
 <body>
-
+<div class="user-list">
+<table>
+        <tr th:each="user:${users}" class="user-row">
+            <td th:text="${user.profileIconId}" class="user-icon"></td>
+            <td th:text="${user.summonerName}" class="user-name"></td>
+            <td class="user-remove">
+                <form th:action="@{/checkingUser/{kakaoId}/{userId}(kakaoId=${kakaoId}, userId=${user.id})}" th:method="delete">
+                    <button type="submit" class="remove-btn">X</button>
+                </form>
+            </td>
+        </tr>
+</table>
+</div>
 
 </body>
 </html>

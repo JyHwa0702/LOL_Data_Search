@@ -8,17 +8,13 @@ import JyHwa.LolData.Service.KakaoService;
 import JyHwa.LolData.Service.SearchMainService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 
 @Controller
 @RequiredArgsConstructor
@@ -54,16 +50,26 @@ public class CheckingUserMainController {
 
     @GetMapping("/checkingUser/{kakaoId}")
     public String checkingUser(@PathVariable Long kakaoId, Model model){
-        checkingUserMainService.showCheckingUser(kakaoId,model);
+
+        if(kakaoId == null){
+            log.info("CheckingUser GetMapping kakaoId = null " );
+            return "";
+        }
+
+        checkingUserMainService.showCheckingUser(kakaoId,model); //model = users
+
+        model.addAttribute("kakaoId",kakaoId);
         return "checkingUsersForm";
     }
 
-    @DeleteMapping("/checkingUser/{kakaoId}/{userId}")
-    public String deleteChickingUser(@PathVariable Long kakaoId,@PathVariable Long userId,Model model){
-        checkingUserMainService.deleteCheckingUser(kakaoId,userId);
-        checkingUserMainService.showCheckingUser(kakaoId,model);
-
-        return "redirect:/checkingUser/"+kakaoId;
-    }
+//    @DeleteMapping("/checkingUser/{kakaoId}/{userId}")
+//    public String deleteCheckingUser(@PathVariable Long kakaoId,@PathVariable Long userId,Model model){
+//        log.info("deleteCheckingUser request kakaoId = "+kakaoId);
+//        log.info("deleteCheckingUser request userId = "+userId);
+//        checkingUserMainService.deleteCheckingUser(kakaoId,userId);
+//        checkingUserMainService.showCheckingUser(kakaoId,model);
+//
+//        return "redirect:/checkingUser/"+kakaoId;
+//    }
 
 }

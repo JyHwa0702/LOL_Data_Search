@@ -70,7 +70,7 @@ public class SearchMainController {
 
 
     @GetMapping("/searchBySummonerName")
-    public String SearchByName(String summonerName, Model model){
+    public String SearchByName(String summonerName, Model model,HttpSession session){
 //        log.info("SearchByName kakaoId 파라미터 값 = "+);
         UserDto usersDto = searchMainService.SearchBySummonerName(summonerName,model); //model user,userDto
         searchMainService.showRankedEmblemByTier(usersDto.getTier(),model);
@@ -81,7 +81,10 @@ public class SearchMainController {
         searchMainService.showItemImageUrlByMatchDtos(matchDtos,model); //아이템 이미지 보여주기
         searchMainService.showRuneImageUrlByMatchDtos(matchDtos,model); //룬 이미지 보여주기
         log.info("userDto = "+usersDto.toString());
-        searchMainService.saveUser(usersDto,model); //db에 유저 저장, userId model
+        searchMainService.saveUser(usersDto,model); //db에 유저 저장, userId mode// l
+
+        Long kakaoId = (Long) session.getAttribute("kakaoId");
+        model.addAttribute("kakaoId",kakaoId);
 //        if(kakaoId !=null){
 //            log.info("kakaoId = "+kakaoId);
 //            model.addAttribute("kakaoId",kakaoId);

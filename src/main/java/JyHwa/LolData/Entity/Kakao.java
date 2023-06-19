@@ -12,7 +12,6 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Table(name = "kakao")
-@ToString
 public class Kakao {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
