@@ -5,6 +5,7 @@ import JyHwa.LolData.Dto.MatchDto.MatchDto;
 import JyHwa.LolData.Dto.MatchDto.ParticipantDto;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -17,10 +18,12 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 
 @Service
 @PropertySource(ignoreResourceNotFound = false,value = "classpath:riotApiKey.properties")
+@Slf4j
 public class MatchService {
     private ObjectMapper objectMapper = new ObjectMapper();
     private final LolUrlDto lolUrlDto = new LolUrlDto();
@@ -29,6 +32,33 @@ public class MatchService {
     private String myKey;
 
     private final String serverUrl = "https://asia.api.riotgames.com/lol/match/v5/matches";
+
+    public String[] threeLosesRecent(String puuid){
+        String[] recentMatchIds = new String[3];
+        try(CloseableHttpClient client = HttpClientBuilder.create().build()){
+            String url = String.format("%s/by-puuid/%s/ids?type=ranked&start=0&count=20&api_key=%s",serverUrl,puuid,myKey);
+            HttpGet request = new HttpGet(url);
+
+            CloseableHttpResponse response = client.execute(request);
+
+            if(response.getStatusLine().getStatusCode() !=200){
+                log.warn("threeLosesRecent statusCode = "+response.getStatusLine().getStatusCode() );
+                return null;
+            }
+
+            HttpEntity entity = response.getEntity();
+            String[] matchIds = objectMapper.readValue(entity.getContent(), String[].class);
+
+            for(int i=0; i< recentMatchIds.length; i++) {
+                recentMatchIds[i] = matchIds[i];
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return recentMatchIds;
+    }
     @Transactional
     public String[] callRiotAPIMatchIdByPuuid(String puuid){
 

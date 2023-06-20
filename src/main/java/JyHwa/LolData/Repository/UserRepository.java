@@ -12,4 +12,5 @@ public interface UserRepository extends JpaRepository<User,Long> {
 
     public List<User> findByCheckField(int CheckField);
     public Optional<User> findBySummonerName(String summonerName);
+    public List<User> findByKakaoId(Long kakaoId);
 }
