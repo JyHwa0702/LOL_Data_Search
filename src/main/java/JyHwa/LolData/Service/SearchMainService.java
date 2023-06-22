@@ -69,6 +69,7 @@ public class SearchMainService {
         LeagueEntryDto[] leagueEntryDtos = leagueService.LeagueBySummonerId(summonerDto.getId());
         UserDto userDto = new UserDto();
 
+
         UserDtoBysummonerDtoAndLeagueEntryDtos(userDto, summonerDto, leagueEntryDtos);
         model.addAttribute("user",userDto);
         return userDto;

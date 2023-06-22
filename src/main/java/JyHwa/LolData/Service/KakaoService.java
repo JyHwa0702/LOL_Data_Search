@@ -1,5 +1,6 @@
 package JyHwa.LolData.Service;
 
+import JyHwa.LolData.Dto.KakaoApi.template_object;
 import JyHwa.LolData.Dto.KakaoDto;
 import JyHwa.LolData.Dto.UserDto;
 import JyHwa.LolData.Entity.Kakao;
@@ -16,10 +17,14 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
@@ -27,6 +32,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.sql.Array;
 import java.util.*;
 
 @Service
@@ -45,9 +51,12 @@ public class KakaoService {
     private String redirect_uri = "http://localhost:8080/oauth/kakao";
 
     private String grantType = "authorization_code";
+    private String scope = "talk_message"; //메세지 보내기 항목 추가
 
     public String getKakaoCodeUrl(){
-        String tokenRequestUrl = String.format("https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=%s&redirect_uri=%s", client_id,redirect_uri);
+        String tokenRequestUrl = String.format("https://kauth.kakao.com/oauth/authorize" +
+                "?response_type=code&client_id=%s&redirect_uri=%s&response_type=code&scope=%s"
+                , client_id,redirect_uri,scope);
         return tokenRequestUrl;
     }
     public JsonNode getKakaoInfo(String accessToken) {
@@ -78,20 +87,32 @@ public class KakaoService {
     }
     public String sendNotification(String message,String accessToken) throws IOException {
         String sendMeUrl = "https://kapi.kakao.com/v2/api/talk/memo/default/send";
+
         CloseableHttpClient httpClient = HttpClientBuilder.create().build();
         HttpPost httpPost = new HttpPost(sendMeUrl);
-        httpPost.setHeader("Authorization","Bearer"+accessToken);
-        httpPost.setHeader("Content-Type","application/x-www-form-urlencoded");
-
-        List<NameValuePair> urlParameters = new ArrayList<>();
-        String jsonMessage = String.format("{/\"object_type\":\"text\",\"text\":\"%s\"}", message);
-        urlParameters.add(new BasicNameValuePair("template_object",jsonMessage));
 
         try{
-            httpPost.setEntity(new UrlEncodedFormEntity(urlParameters,"UTF-8"));
-            CloseableHttpResponse response = httpClient.execute(httpPost);
+            httpPost.setHeader("Content-Type","application/x-www-form-urlencoded");
+            httpPost.setHeader("Authorization","Bearer "+accessToken);
 
-            return response.toString();
+            template_object template_object = new template_object(message);
+            String templateObjectJson = template_object.toJson(objectMapper);
+            log.info("templateObjectJson.toString(); = "+templateObjectJson);
+
+            List<NameValuePair> params = new ArrayList<>();
+            params.add(new BasicNameValuePair("template_object",templateObjectJson));
+
+//            StringEntity entity = new StringEntity(templateObjectJson,"UTF-8");
+//            entity.setContentType("application/json");
+//            log.info("entity = "+entity);
+            httpPost.setEntity(new UrlEncodedFormEntity(params,"UTF-8"));
+            log.info("httpPost = "+httpPost.getEntity().getContent());
+
+            CloseableHttpResponse response = httpClient.execute(httpPost);
+            String responseBody = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
+
+            log.info("responseBody Message 성공시 0"+responseBody);
+        return responseBody;
 
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
@@ -150,7 +171,7 @@ public class KakaoService {
         }
     }
     @Transactional
-    public Kakao saveKakao(JsonNode kakaoInfo){
+    public Kakao saveKakao(JsonNode kakaoInfo,String accessToken){
 
 //      properties{
 //          nickname
@@ -165,6 +186,7 @@ public class KakaoService {
 
         kakaoDto.setEmail(email);
         kakaoDto.setNickname(nickname);
+        kakaoDto.setToken(accessToken); //accessToken 넣는곳, 양방향 암호화 해서 처리해야함
 
         Kakao kakao = kakaoDto.toEntity();
         log.info("savedKakao before = "+kakao.toString());

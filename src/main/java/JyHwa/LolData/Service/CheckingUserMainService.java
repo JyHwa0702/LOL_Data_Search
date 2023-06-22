@@ -12,6 +12,7 @@ import net.bytebuddy.implementation.bytecode.Throw;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -38,6 +39,7 @@ public class CheckingUserMainService {
 
     }
 
+    @Transactional
     public User checkingUser(Long userId,Long kakaoId){
 //        Optional<User> userById = userRepository.findById(userId);
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
@@ -47,6 +49,8 @@ public class CheckingUserMainService {
 
         UserDto userDto = new UserDto(user);
         userDto.setKakao(kakao);
+        userDto.setCheckField(1); //체킹 당했다는 표시
+
         User userSavedKakao = userDto.toEntity();
         userRepository.save(userSavedKakao);
 

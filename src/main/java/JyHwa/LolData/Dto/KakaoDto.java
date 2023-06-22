@@ -16,11 +16,14 @@ public class KakaoDto {
 
     private List<User> users;
 
+    private String token;
+
     public KakaoDto(Kakao kakao){
         this.id= kakao.getId();
         this.email=kakao.getEmail();
         this.nickname =kakao.getNickname();
         this.users=kakao.getUsers();
+        this.token=kakao.getToken();
     }
 
     public Kakao toEntity(){

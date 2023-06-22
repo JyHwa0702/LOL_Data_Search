@@ -58,10 +58,11 @@ public class SearchMainController {
     @GetMapping("/oauth/kakao")
     public String kakaoLogin(@RequestParam("code") String code,HttpSession session){
         log.info("code를 받습니다 = "+code);
-        String kakaoAccessToken = kakaoService.getKakaoAccessToken(code);
-        JsonNode kakaoInfo = kakaoService.getKakaoInfo(kakaoAccessToken);
+        String accessToken = kakaoService.getKakaoAccessToken(code);
+        JsonNode kakaoInfo = kakaoService.getKakaoInfo(accessToken);
         log.info("kakaoInfo = "+kakaoInfo);
-        Kakao kakao = kakaoService.saveKakao(kakaoInfo);// 카카오 아이디 저장 및 kakaoId model넘기기
+
+        Kakao kakao = kakaoService.saveKakao(kakaoInfo,accessToken);// 카카오 아이디 저장 및 kakaoId model넘기기
 
         session.setAttribute("kakaoId",kakao.getId());
 

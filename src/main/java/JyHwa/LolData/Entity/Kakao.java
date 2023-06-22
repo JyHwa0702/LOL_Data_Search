@@ -21,10 +21,13 @@ public class Kakao {
     @OneToMany(mappedBy = "kakao",fetch = FetchType.EAGER,cascade = CascadeType.REMOVE)
     private List<User> users;
 
+    private String token;
+
     public Kakao(KakaoDto kakaoDto){
         this.id= kakaoDto.getId();
         this.email=kakaoDto.getEmail();
         this.nickname =kakaoDto.getNickname();
         this.users =kakaoDto.getUsers();
+        this.token=kakaoDto.getToken();
     }
 }
