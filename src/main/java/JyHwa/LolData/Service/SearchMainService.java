@@ -1,6 +1,5 @@
 package JyHwa.LolData.Service;
 
-import JyHwa.LolData.Dto.KakaoDto;
 import JyHwa.LolData.Dto.LeagueEntryDto.LeagueEntryDto;
 import JyHwa.LolData.Dto.LolUrlDto;
 import JyHwa.LolData.Dto.MatchDto.MatchDto;
@@ -39,6 +38,21 @@ public class SearchMainService {
         summonerDto.setCheckField(1);
         summonerRepository.save(summonerDto.toEntity());
     }
+    public UserDto showUserInfo(String summonerName,Model model){
+        UserDto userDto = searchBySummonerName(summonerName,model); //model user,userDto
+        showRankedEmblemByTier(userDto.getTier(),model); //랭크 엠블럼
+        showProfileIconUrlByUserDto(userDto,model);//프로필 아이콘 표시
+
+        return userDto;
+    }
+
+    public void showMatchInfo(UserDto userDto,Model model){
+        List<MatchDto> matchDtos = matchDtosByUserPuuid(userDto, model);
+        showSpellImageUrlByMatchDtos(matchDtos,model); //스펠 이미지 보여주기
+        showChampionImageUrlByMatchDtos(matchDtos,model); //챔피언 이미지 보여주기
+        showRuneImageUrlByMatchDtos(matchDtos,model); //룬 이미지 보여주기
+        showItemImageUrlByMatchDtos(matchDtos,model); //아이템 이미지 보여주기
+    }
     public User saveUser(UserDto userDto,Model model) {
 
         Optional<User> bySummonerName = userRepository.findBySummonerName(userDto.getSummonerName());
@@ -63,21 +77,21 @@ public class SearchMainService {
     }
 
 
-    public UserDto SearchBySummonerName(String summonerName, Model model) {
+    public UserDto searchBySummonerName(String summonerName, Model model) {
         System.out.println("MainSErvice = "+summonerName);
         SummonerDto summonerDto = summonerService.callRiotAPISummonerByName(summonerName);
         LeagueEntryDto[] leagueEntryDtos = leagueService.LeagueBySummonerId(summonerDto.getId());
         UserDto userDto = new UserDto();
 
 
-        UserDtoBysummonerDtoAndLeagueEntryDtos(userDto, summonerDto, leagueEntryDtos);
+        userDtoBysummonerDtoAndLeagueEntryDtos(userDto, summonerDto, leagueEntryDtos);
         model.addAttribute("user",userDto);
         return userDto;
     }
 
 
 
-    public void UserDtoBysummonerDtoAndLeagueEntryDtos(UserDto usersDto, SummonerDto summonerDto, LeagueEntryDto[] leagueEntryDtos) {
+    public void userDtoBysummonerDtoAndLeagueEntryDtos(UserDto usersDto, SummonerDto summonerDto, LeagueEntryDto[] leagueEntryDtos) {
         LeagueEntryDto leagueEntryDto = leagueEntryDtos[0]; //솔로큐
 
         usersDto.setSummonerName(summonerDto.getName());
@@ -92,9 +106,10 @@ public class SearchMainService {
         usersDto.setSummonerLevel(summonerDto.getSummonerLevel());
         usersDto.setCheckField(summonerDto.getCheckField());
     }
-    public List<MatchDto> matchDtosByUserPuuid(String puuId,Model model) {
+    public List<MatchDto> matchDtosByUserPuuid(UserDto userDto,Model model) {
 
-        String[] matchIds = matchService.callRiotAPIMatchIdByPuuid(puuId);
+        String puuid = userDto.getPuuid();
+        String[] matchIds = matchService.callRiotAPIMatchIdByPuuid(puuid);
         List<MatchDto> matchDtos = matchService.callRiotAPIMatchsByMatchIds(matchIds);
         model.addAttribute("matchDtos", matchDtos);
         return matchDtos;

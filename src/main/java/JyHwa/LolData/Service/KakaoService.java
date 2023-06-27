@@ -52,6 +52,9 @@ public class KakaoService {
 
     private String grantType = "authorization_code";
     private String scope = "talk_message"; //메세지 보내기 항목 추가
+    private String target_id_type="user_id";
+    private String sendMeUrl = "https://kapi.kakao.com/v2/api/talk/memo/default/send";
+    private String logoutUrl = "https://kapi.kakao.com/v1/user/logout";
 
     public String getKakaoCodeUrl(){
         String tokenRequestUrl = String.format("https://kauth.kakao.com/oauth/authorize" +
@@ -85,8 +88,49 @@ public class KakaoService {
         }
 
     }
+
+    public Long kakaoLogout(String accessToken){
+
+        CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+        HttpPost httpPost = new HttpPost(logoutUrl);
+
+        JsonNode kakaoInfo = getKakaoInfo(accessToken);
+
+        Long target_id = Long.valueOf(kakaoInfo.get("id").asText());
+
+        try{
+            httpPost.setHeader("Authorization","Bearer "+accessToken);
+
+            List<NameValuePair> params = new ArrayList<>();
+            params.add(new BasicNameValuePair("target_id_type",target_id_type));
+            params.add(new BasicNameValuePair("target_id",target_id.toString()));
+
+            httpPost.setEntity(new UrlEncodedFormEntity(params,"UTF-8"));
+
+            CloseableHttpResponse response = httpClient.execute(httpPost);
+
+            if(response.getStatusLine().getStatusCode()!=200){
+                log.error("kakao logout CodeStatus = "+response.getStatusLine().getStatusCode());
+                return null;
+            }
+
+            Long logoutKakaoId = objectMapper.readValue(response.getEntity().getContent(), Long.class);
+
+            return logoutKakaoId;
+
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return null;
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+            return null;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
     public String sendNotification(String message,String accessToken) throws IOException {
-        String sendMeUrl = "https://kapi.kakao.com/v2/api/talk/memo/default/send";
+
 
         CloseableHttpClient httpClient = HttpClientBuilder.create().build();
         HttpPost httpPost = new HttpPost(sendMeUrl);
@@ -217,8 +261,11 @@ public class KakaoService {
     @Transactional
     public List<User> findUsers(Long kakaoId){
         Optional<Kakao> kakao = kakaoRepository.findById(kakaoId);
-        List<User> users = kakao.get().getUsers();
-        return users;
+        if (kakao.isPresent()){
+            List<User> users = kakao.get().getUsers();
+            return users;
+        }
+        return null;
     }
     @Transactional
     public void kakaoDeleteUser(Long kakaoId, Long userId){

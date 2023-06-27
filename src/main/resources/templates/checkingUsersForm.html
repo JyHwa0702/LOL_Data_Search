@@ -7,6 +7,9 @@
 </head>
 <body>
 <div class="user-list">
+    <h1>
+    <a th:href="@{/}">영화GG</a>
+    </h1>
 <table>
         <tr th:each="user:${users}" class="user-row">
             <td th:text="${user.profileIconId}" class="user-icon"></td>

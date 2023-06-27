@@ -6,17 +6,22 @@
 </head>
 <body>
 
-<h1>영화GG</h1>
-
-<form  th:action="@{/searchBySummonerName}" method="get">
+<h1>
+    <a th:href="@{/}">영화GG</a>
+</h1>
+<a th:href="@{/checkingUser/{kakaoId}(kakaoId=${kakaoId})}">유저 리스트 확인</a>
+<form  th:action="@{/search}" method="get">
     <label for="summonerName">소환사 이름 : </label>
-    <input type="text" id="summonerName" name="summonerName" placeholder="소환사의 이름을 입력하세요." required>
+    <input type="text" id="summonerName" name="summonerName" placeholder="소환사의 이름을 입력하세요."  required>
 <!--    <input type="hidden" name="kakaoId" th:value="${kakaoId}">-->
     <button type="submit">검색</button>
 </form>
 
-<a th:href="@{${kakaoTokenUrl}}">
-    Kakao 로그인
+<a th:href="@{${kakaoTokenUrl}}" th:if="${kakaoId == null}">
+    카카오 로그인
+</a>
+<a th:href="@{/oauth/kakao/logout}" th:if="${kakaoId != null}">
+    로그아웃
 </a>
 
 </body>

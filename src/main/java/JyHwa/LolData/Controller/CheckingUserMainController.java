@@ -44,7 +44,7 @@ public class CheckingUserMainController {
 
         redirectAttributes.addAttribute("summonerName",user.getSummonerName());
 
-        return "redirect:/searchBySummonerName";
+        return "redirect:/search";
     }
 
 
@@ -53,7 +53,7 @@ public class CheckingUserMainController {
 
         if(kakaoId == null){
             log.info("CheckingUser GetMapping kakaoId = null " );
-            return "";
+            return "redirect:/oauth/kakao";
         }
 
         checkingUserMainService.showCheckingUser(kakaoId,model); //model = users

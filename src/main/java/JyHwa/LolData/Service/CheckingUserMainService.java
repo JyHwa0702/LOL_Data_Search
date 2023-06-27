@@ -14,6 +14,7 @@ import org.springframework.ui.Model;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -67,9 +68,13 @@ public class CheckingUserMainService {
     }
 
     public void showCheckingUser(Long kakaoId, Model model){
-        List<User> users = kakaoService.findUsers(kakaoId);
-        log.info("showCheckingUser users = "+users.toArray().toString());
-        model.addAttribute("users",users);
+        List<User> users = new ArrayList<>();
+
+        users = kakaoService.findUsers(kakaoId);
+        if(users != null){
+            log.info("showCheckingUser users = "+users.toArray().toString());
+            model.addAttribute("users",users);
+        }
     }
     public void deleteCheckingUser(Long kakaoId, Long userId){
         List<User> users = kakaoService.findUsers(kakaoId);
