@@ -29,7 +29,7 @@ public class SearchMainService {
     private final SummonerService summonerService;
     private final LeagueService leagueService;
     private final MatchService matchService;
-    private final KakaoService kakaoService;
+    private final KakaoService kakaoServic4e;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final LolUrlDto lolUrlDto = new LolUrlDto();
 
