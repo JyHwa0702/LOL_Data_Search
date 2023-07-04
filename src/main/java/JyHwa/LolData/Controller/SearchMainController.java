@@ -43,20 +43,24 @@ public class SearchMainController {
 
     @GetMapping("/")
     public String indexPage(HttpSession session, Model model) {
-        String kakaoTokenUrl = kakaoService.getKakaoCodeUrl();
+        String kakaoTokenUrl = kakaoService.getKakaoCodeUrl(); //코드 불러오기
         log.info("kakaoTokenUrl = "+kakaoTokenUrl);
         model.addAttribute("kakaoTokenUrl",kakaoTokenUrl);
 
         Long kakaoId = (Long) session.getAttribute("kakaoId");
 
         log.info("kakaoId from session = "+kakaoId);
-        if (kakaoId != null){
+
+        boolean isSaveKakao = kakaoService.isSaveKakao(kakaoId);;
+        model.addAttribute("isSaveKakao",kakaoService.isSaveKakao(kakaoId));
+        model.addAttribute("kakaoId",kakaoId);
+        if(isSaveKakao==true){
             Optional<Kakao> byId = kakaoRepository.findById(kakaoId);
-            if(byId.isEmpty()){
-                return "redirect:/oauth/kakao";
+            log.info("byId = "+byId.toString());
+            if(byId.isPresent()){
+                model.addAttribute("accessToken",byId.get().getToken());
             }
         }
-        model.addAttribute("kakaoId",kakaoId);
         return "index";
     }
 

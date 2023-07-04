@@ -49,11 +49,12 @@ public class CheckingUserMainController {
 
 
     @GetMapping("/checkingUser/{kakaoId}")
-    public String checkingUser(@PathVariable Long kakaoId, Model model){
+    public String checkingUser(@PathVariable(required = false) Long kakaoId, Model model){
 
         if(kakaoId == null){
             log.info("CheckingUser GetMapping kakaoId = null " );
-            return "redirect:/oauth/kakao";
+            String kakaoCodeUrl = kakaoService.getKakaoCodeUrl();
+            return "redirect:"+kakaoCodeUrl;
         }
 
         checkingUserMainService.showCheckingUser(kakaoId,model); //model = users

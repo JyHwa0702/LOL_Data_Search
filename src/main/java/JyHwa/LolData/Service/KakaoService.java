@@ -56,6 +56,23 @@ public class KakaoService {
     private String sendMeUrl = "https://kapi.kakao.com/v2/api/talk/memo/default/send";
     private String logoutUrl = "https://kapi.kakao.com/v1/user/logout";
 
+
+    public boolean isSaveKakao(Long kakaoId){
+
+        if(kakaoId == null){
+            log.info("kakaoId is null");
+            return false;
+        }
+
+        Optional<Kakao> byId = kakaoRepository.findById(kakaoId);
+        if(byId.isPresent()){
+            log.info("isSaveKakao = "+byId.get().toString());
+            return true;
+        } else {
+            log.info("isSaveKakao = false");
+            return false;
+        }
+    }
     public String getKakaoCodeUrl(){
         String tokenRequestUrl = String.format("https://kauth.kakao.com/oauth/authorize" +
                 "?response_type=code&client_id=%s&redirect_uri=%s&response_type=code&scope=%s"
@@ -70,6 +87,7 @@ public class KakaoService {
             CloseableHttpClient httpClient = HttpClientBuilder.create().build();
             HttpPost httpPost = new HttpPost(getInfoUrl);
             httpPost.setHeader("Authorization","Bearer "+accessToken);
+            httpPost.setHeader("Content-type","application/x-www-form-urlencoded;charset=utf-8");
 
 
             CloseableHttpResponse response = httpClient.execute(httpPost);
@@ -94,6 +112,7 @@ public class KakaoService {
         CloseableHttpClient httpClient = HttpClientBuilder.create().build();
         HttpPost httpPost = new HttpPost(logoutUrl);
 
+        log.info("KakaoLogout accessToken = "+accessToken);
         JsonNode kakaoInfo = getKakaoInfo(accessToken);
 
         Long target_id = Long.valueOf(kakaoInfo.get("id").asText());

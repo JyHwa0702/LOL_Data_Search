@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>롤 전적 검색</title>
+    <link rel="stylesheet" href="/css/index.css">
 </head>
 <body>
 
@@ -16,13 +17,14 @@
 <!--    <input type="hidden" name="kakaoId" th:value="${kakaoId}">-->
     <button type="submit">검색</button>
 </form>
-
-<a th:href="@{${kakaoTokenUrl}}" th:if="${kakaoId == null}">
+<button th:href="@{${kakaoTokenUrl}}" th:if="${!isSaveKakao}" type="button">
     카카오 로그인
-</a>
-<a th:href="@{/oauth/kakao/logout}" th:if="${kakaoId != null}">
-    로그아웃
-</a>
+</button>
+
+<form th:action="@{/oauth/kakao/logout}" method="post" th:if="${isSaveKakao}">
+    <input type="hidden" name="accessToken" value="${accessToken}">
+    <button type="submit">로그아웃</button>
+</form>
 
 </body>
 </html>
