@@ -63,14 +63,15 @@ public class CheckingUserMainController {
         return "checkingUsersForm";
     }
 
-//    @DeleteMapping("/checkingUser/{kakaoId}/{userId}")
-//    public String deleteCheckingUser(@PathVariable Long kakaoId,@PathVariable Long userId,Model model){
-//        log.info("deleteCheckingUser request kakaoId = "+kakaoId);
-//        log.info("deleteCheckingUser request userId = "+userId);
-//        checkingUserMainService.deleteCheckingUser(kakaoId,userId);
-//        checkingUserMainService.showCheckingUser(kakaoId,model);
-//
-//        return "redirect:/checkingUser/"+kakaoId;
-//    }
+
+    @DeleteMapping("/checkingUser/{kakaoId}/{userId}")
+    public String deleteCheckingUser(@PathVariable Long kakaoId,@PathVariable Long userId,Model model){
+        log.info("deleteCheckingUser request kakaoId = "+kakaoId);
+        log.info("deleteCheckingUser request userId = "+userId);
+        checkingUserMainService.deleteCheckingUser(kakaoId,userId);
+        checkingUserMainService.showCheckingUser(kakaoId,model);
+
+        return "redirect:/checkingUser/"+kakaoId;
+    }
 
 }
