@@ -14,6 +14,17 @@
     		체크된 유저는 로그인된 카카오 아이디로 3연패 이상시 카카오톡 메시지 알람기능구현
 
 
-	구현사진)
 
-		1.
+
+<h2>구현사진</h2>
+
+1. 롤 전적검색화면
+   
+<img width="80%" src="https://github.com/JyHwa0702/LOL_Data_Search/assets/104346531/c5823395-3b4e-425b-9801-e9465a83df73"/>
+
+
+2. 체크된 롤유저 연패달성시 해당 롤유저를 체크한 카카오톡아이디로 메시지발송
+   
+<img width="50%" src="https://github.com/JyHwa0702/LOL_Data_Search/assets/104346531/78523fa8-3865-4c48-b1ce-fed241e60558"/>
+
+
