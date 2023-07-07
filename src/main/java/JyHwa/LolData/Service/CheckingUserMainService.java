@@ -60,8 +60,6 @@ public class CheckingUserMainService {
 //        users.add(userById.get());
 //        kakaoDto.setUsers(users);
 
-
-
         log.info("userSavedKakao = "+userSavedKakao.toString());
 
         return userSavedKakao;
