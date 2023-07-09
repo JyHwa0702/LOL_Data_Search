@@ -75,7 +75,6 @@ public class CheckingUserMainService {
         }
     }
     public void deleteCheckingUser(Long kakaoId, Long userId){
-        List<User> users = kakaoService.findUsers(kakaoId);
         kakaoService.kakaoDeleteUser(kakaoId,userId);
     }
 }

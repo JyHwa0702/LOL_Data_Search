@@ -80,9 +80,9 @@ public class KakaoService {
         return tokenRequestUrl;
     }
     public JsonNode getKakaoInfo(String accessToken) {
+        String getInfoUrl = "https://kapi.kakao.com/v2/user/me";
 
         try{
-            String getInfoUrl = "https://kapi.kakao.com/v2/user/me";
 
             CloseableHttpClient httpClient = HttpClientBuilder.create().build();
             HttpPost httpPost = new HttpPost(getInfoUrl);
@@ -290,6 +290,8 @@ public class KakaoService {
     public void kakaoDeleteUser(Long kakaoId, Long userId){
         List<User> users = findUsers(kakaoId);
         Optional<User> userById = userRepository.findById(userId);
-        users.remove(userById);
+        if(userById.isPresent()){
+            users.remove(userById);
+        }
     }
 }

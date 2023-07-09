@@ -17,8 +17,13 @@
 <!--    <input type="hidden" name="kakaoId" th:value="${kakaoId}">-->
     <button type="submit">검색</button>
 </form>
-<button th:href="@{${kakaoTokenUrl}}" th:if="${!isSaveKakao}" type="button">
+
+
+
+    <button>
+        <a th:href="@{${kakaoTokenUrl}}" th:if="${!isSaveKakao}">
     카카오 로그인
+        </a>
 </button>
 
 <form th:action="@{/oauth/kakao/logout}" method="post" th:if="${isSaveKakao}">
