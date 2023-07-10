@@ -20,14 +20,15 @@
 
 
 
-    <button>
-        <a th:href="@{${kakaoTokenUrl}}" th:if="${!isSaveKakao}">
-    카카오 로그인
-        </a>
+<button th:if="${!isSaveKakao}" >
+    <a th:href="@{${kakaoTokenUrl}}">
+        카카오 로그인
+    </a>
+
 </button>
 
 <form th:action="@{/oauth/kakao/logout}" method="post" th:if="${isSaveKakao}">
-    <input type="hidden" name="accessToken" value="${accessToken}">
+    <input type="hidden" name="accessToken" th:value="${accessToken}">
     <button type="submit">로그아웃</button>
 </form>
 

@@ -25,7 +25,7 @@ public class MatchCheckerService {
     private final UserRepository userRepository;
     private final KakaoService kakaoService;
 
-    @Scheduled(fixedRate = 600000)
+    @Scheduled(fixedRate = 60000)
     private void checkRecentMatches(){
         log.info("Runnig CheckRecentMatches()");
 

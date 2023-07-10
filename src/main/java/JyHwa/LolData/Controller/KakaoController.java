@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpSession;
@@ -32,7 +33,7 @@ public class KakaoController {
         return "redirect:/";
     }
 
-    @GetMapping("/oauth/kakao/logout")
+    @PostMapping("/oauth/kakao/logout")
     public String kakaoLogout(String accessToken){
         Long kakaoLogoutId = kakaoService.kakaoLogout(accessToken);
         log.info("로그아웃된 kakaoId = "+kakaoLogoutId);
