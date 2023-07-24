@@ -16,6 +16,8 @@
             <td th:text="${user.summonerName}" class="user-name"></td>
             <td class="user-remove">
                 <form th:action="@{/checkingUser/{kakaoId}/{userId}(kakaoId=${kakaoId}, userId=${user.id})}" th:method="delete">
+                    <input type="hidden" name="kakaoId" th:value="kakaoId">
+                    <input type="hidden" name="userId" th:value="${user.id}">
                     <button type="submit" class="remove-btn">X</button>
                 </form>
             </td>

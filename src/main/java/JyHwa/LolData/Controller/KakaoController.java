@@ -29,16 +29,18 @@ public class KakaoController {
         Kakao kakao = kakaoService.saveKakao(kakaoInfo,accessToken);// 카카오 아이디 저장 및 kakaoId model넘기기
 
         session.setAttribute("kakaoId",kakao.getId());
-
+        log.info("로그인시 셋팅된 kakaoId = "+kakao.getId());
         return "redirect:/";
     }
 
     @PostMapping("/oauth/kakao/logout")
-    public String kakaoLogout(String accessToken){
+    public String kakaoLogout(String accessToken,HttpSession session){
         Long kakaoLogoutId = kakaoService.kakaoLogout(accessToken);
-        log.info("로그아웃된 kakaoId = "+kakaoLogoutId);
 
-        return "/";
+        log.info("로그아웃된 kakaoId = "+kakaoLogoutId);
+        session.setAttribute("kakaoId",null);
+
+        return "redirect:/";
     }
 
 }

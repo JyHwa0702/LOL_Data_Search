@@ -44,9 +44,7 @@
                 <th>Rune</th>
                 <th>아이템</th>
                 <th>LV / G / CS</th>
-                <th>플레이</th>
                 <th>와드</th>
-                <th>상세 정보</th>
             </tr>
         </thead>
     <tbody>
@@ -78,9 +76,9 @@
             </td>
             <td th:class="${participant.win ? 'win':'loss'}" th:text="|LV ${participant.champLevel}   G ${participant.goldEarned}&emsp;CS ${participant.totalMinionsKilled}|"></td>
             <td th:class="${participant.win ? 'win':'loss'}" th:text="|와드 설치:${participant.wardsPlaced}&emsp;제거:${participant.wardsKilled}|"></td>
-            <td th:class="${participant.win ? 'win':'loss'}">
-                <a href="@{|/matchDetails/${matchDto.gameId}|}">상세 정보</a>
-            </td>
+<!--            <td th:class="${participant.win ? 'win':'loss'}">-->
+<!--                <a href="@{|/matchDetails/${matchDto.gameId}|}">상세 정보</a>-->
+<!--            </td>-->
     </block>
     </tr>
     </tbody>

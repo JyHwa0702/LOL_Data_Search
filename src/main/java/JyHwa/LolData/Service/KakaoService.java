@@ -119,7 +119,6 @@ public class KakaoService {
 
         try{
             httpPost.setHeader("Authorization","Bearer "+accessToken);
-
             List<NameValuePair> params = new ArrayList<>();
             params.add(new BasicNameValuePair("target_id_type",target_id_type));
             params.add(new BasicNameValuePair("target_id",target_id.toString()));
@@ -132,8 +131,9 @@ public class KakaoService {
                 log.error("kakao logout CodeStatus = "+response.getStatusLine().getStatusCode());
                 return null;
             }
-
-            Long logoutKakaoId = objectMapper.readValue(response.getEntity().getContent(), Long.class);
+            JsonNode jsonNode = objectMapper.readTree(response.getEntity().getContent());
+            long logoutKakaoId = jsonNode.get("id").asLong();
+//            Long logoutKakaoId = objectMapper.readValue(response.getEntity().getContent(), Long.class);
 
             return logoutKakaoId;
 
@@ -259,7 +259,7 @@ public class KakaoService {
             log.info("savedKakao after = "+savedKakao.toString());
             return savedKakao;
         }
-        return kakao;
+        return byEmail.get();
     }
 
     @Transactional
